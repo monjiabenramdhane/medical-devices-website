@@ -1,0 +1,303 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// HOMEPAGE MODELS
+// ============================================
+
+model HeroSlide {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  description String?  @db.Text
+  ctaText     String?
+  ctaLink     String?
+  imageUrl    String
+  imageAlt    String
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+  @@index([isActive])
+  @@map("hero_slides")
+}
+
+model HomeSection {
+  id          String   @id @default(cuid())
+  sectionKey  String   @unique // e.g., "about", "discover", "mission"
+  title       String
+  subtitle    String?
+  content     String   @db.Text
+  imageUrl    String?
+  imageAlt    String?
+  ctaText     String?
+  ctaLink     String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([sectionKey])
+  @@index([order])
+  @@map("home_sections")
+}
+
+// ============================================
+// PRODUCT HIERARCHY MODELS
+// ============================================
+
+model Brand {
+  id             String          @id @default(cuid())
+  name           String          @unique
+  slug           String          @unique
+  description    String?         @db.Text
+  logoUrl        String
+  logoAlt        String
+  websiteUrl     String?
+  order          Int             @default(0)
+  isActive       Boolean         @default(true)
+  metaTitle      String?
+  metaDescription String?        @db.Text
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  
+  equipmentTypes EquipmentType[]
+  products       Product[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@map("brands")
+}
+
+model EquipmentType {
+  id          String         @id @default(cuid())
+  name        String
+  slug        String
+  description String?        @db.Text
+  iconUrl     String?
+  order       Int            @default(0)
+  isActive    Boolean        @default(true)
+  brandId     String
+  brand       Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  subcategories Subcategory[]
+  products      Product[]
+
+  @@unique([brandId, slug])
+  @@index([brandId])
+  @@index([slug])
+  @@map("equipment_types")
+}
+
+model Subcategory {
+  id              String         @id @default(cuid())
+  name            String
+  slug            String
+  description     String?        @db.Text
+  order           Int            @default(0)
+  isActive        Boolean        @default(true)
+  equipmentTypeId String
+  equipmentType   EquipmentType  @relation(fields: [equipmentTypeId], references: [id], onDelete: Cascade)
+  
+  series   Series[]
+  products Product[]
+
+  @@unique([equipmentTypeId, slug])
+  @@index([equipmentTypeId])
+  @@index([slug])
+  @@map("subcategories")
+}
+
+model Series {
+  id             String       @id @default(cuid())
+  name           String
+  slug           String
+  description    String?      @db.Text
+  imageUrl       String?
+  imageAlt       String?
+  order          Int          @default(0)
+  isActive       Boolean      @default(true)
+  subcategoryId  String?
+  subcategory    Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  
+  products Product[]
+
+  @@unique([subcategoryId, slug])
+  @@index([subcategoryId])
+  @@index([slug])
+  @@map("series")
+}
+
+enum Gamme {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum Specialty {
+  CARDIOLOGY
+  GENERALIST
+  ORTHOPEDIC
+  NEUROLOGY
+  OBSTETRICS
+  EMERGENCY
+  PEDIATRIC
+  OTHER
+}
+
+model Product {
+  id                 String         @id @default(cuid())
+  name               String
+  slug               String
+  shortDescription   String?        @db.Text
+  fullDescription    String?        @db.Text
+  gamme              Gamme?
+  specialty          Specialty?
+  heroImageUrl       String
+  heroImageAlt       String
+  isFeatured         Boolean        @default(false)
+  isActive           Boolean        @default(true)
+  order              Int            @default(0)
+  
+  // SEO
+  metaTitle          String?
+  metaDescription    String?        @db.Text
+  metaKeywords       String?
+  
+  // Relations
+  brandId            String
+  brand              Brand          @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  
+  equipmentTypeId    String?
+  equipmentType      EquipmentType? @relation(fields: [equipmentTypeId], references: [id], onDelete: SetNull)
+  
+  subcategoryId      String?
+  subcategory        Subcategory?   @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
+  
+  seriesId           String?
+  series             Series?        @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  
+  gallery            ProductImage[]
+  sections           ProductSection[]
+  specifications     ProductSpecification[]
+  
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  @@unique([brandId, slug])
+  @@index([brandId])
+  @@index([slug])
+  @@index([isFeatured])
+  @@index([gamme])
+  @@index([specialty])
+  @@map("products")
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String
+  order     Int      @default(0)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([order])
+  @@map("product_images")
+}
+
+model ProductSection {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  imageUrl  String?
+  imageAlt  String?
+  order     Int      @default(0)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([order])
+  @@map("product_sections")
+}
+
+model ProductSpecification {
+  id        String   @id @default(cuid())
+  category  String   // e.g., "Technical", "Display", "Connectivity"
+  name      String
+  value     String
+  order     Int      @default(0)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([category])
+  @@index([order])
+  @@map("product_specifications")
+}
+
+// ============================================
+// USER & AUTH MODELS
+// ============================================
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String    // Hashed with bcrypt
+  role          UserRole  @default(USER)
+  isActive      Boolean   @default(true)
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions Session[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([sessionToken])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}

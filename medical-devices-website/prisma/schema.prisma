@@ -93,6 +93,9 @@ model EquipmentType {
   subcategories Subcategory[]
   products      Product[]
 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime? @updatedAt
+
   @@unique([brandId, slug])
   @@index([brandId])
   @@index([slug])
@@ -111,6 +114,9 @@ model Subcategory {
   
   series   Series[]
   products Product[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime? @updatedAt
 
   @@unique([equipmentTypeId, slug])
   @@index([equipmentTypeId])
@@ -131,6 +137,9 @@ model Series {
   subcategory    Subcategory? @relation(fields: [subcategoryId], references: [id], onDelete: SetNull)
   
   products Product[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime? @updatedAt
 
   @@unique([subcategoryId, slug])
   @@index([subcategoryId])

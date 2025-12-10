@@ -45,7 +45,7 @@ export default function ActionButtons({ editUrl, deleteUrl, onDelete, resourceNa
     <div className="flex items-center space-x-2">
       <Link 
         href={editUrl}
-        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+        className="p-2 text-[#193660] hover:bg-blue-50 rounded-lg transition-colors"
         title="Edit"
       >
         <Pencil className="h-4 w-4" />

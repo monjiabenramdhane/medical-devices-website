@@ -95,7 +95,7 @@ export function BrandCarousel({ brands }: BrandCarouselProps) {
         <div className="text-center mt-12">
           <Link
             href="/brands"
-            className="inline-flex items-center px-6 py-3 border border-blue-600 text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 transition-colors"
+            className="inline-flex items-center px-6 py-3 border border-[#193660] text-base font-medium rounded-md text-[#193660] bg-white hover:bg-blue-50 transition-colors"
           >
             View All Brands
           </Link>

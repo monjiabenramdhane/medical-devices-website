@@ -211,7 +211,7 @@ export function HomeSectionForm({ initialData, isEdit = false }: HomeSectionForm
               id="isActive"
               checked={formData.isActive}
               onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-[#193660] focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
               Active
@@ -224,7 +224,7 @@ export function HomeSectionForm({ initialData, isEdit = false }: HomeSectionForm
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+          className="px-6 py-3 bg-[#193660] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
         >
           {isLoading ? 'Saving...' : isEdit ? 'Update Section' : 'Create Section'}
         </button>

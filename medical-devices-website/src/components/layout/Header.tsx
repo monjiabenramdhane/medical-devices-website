@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, UserIcon } from 'lucide-react';
 
 export function Header() {
   const { data: session } = useSession();
@@ -32,19 +32,19 @@ export function Header() {
           <div className="hidden lg:flex lg:items-center lg:space-x-8">
             <Link
               href="/brands"
-              className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
             >
               Brands
             </Link>
             <Link
               href="/products"
-              className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
             >
               Products
             </Link>
             
             <div className="relative group">
-              <button className="flex items-center text-base font-medium text-gray-700 hover:text-blue-600 transition-colors">
+              <button className="flex items-center text-base font-medium text-gray-700 hover:text-[#193660] transition-colors">
                 Services
                 <ChevronDown className="ml-1 h-4 w-4" />
               </button>
@@ -53,40 +53,41 @@ export function Header() {
 
             <Link
               href="/research"
-              className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
             >
               Research
             </Link>
 
             <Link
               href="/about"
-              className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
             >
               About Us
+            </Link>
+
+            <Link
+              href="/contact"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-3xl text-white bg-[#193660] hover:bg-[#193660]/90 transition-colors"
+            >
+              Contact
             </Link>
 
             {isAdmin && (
               <Link
                 href="/admin"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-2 py-2 border rounded-full border-transparent text-sm font-medium text-white bg-[#193660] hover:bg-[#193660]/90 transition-colors"
               >
-                Admin Dashboard
+                <UserIcon className="h-5 w-5"/>
+                <span className="sr-only">Admin Dashboard</span>
               </Link>
             )}
-
-            <Link
-              href="/contact"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-            >
-              Contact
-            </Link>
           </div>
 
           {/* Mobile menu button */}
           <div className="flex lg:hidden">
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-[#193660] hover:bg-gray-100 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-expanded={mobileMenuOpen}
               aria-label="Toggle navigation menu"
@@ -106,28 +107,28 @@ export function Header() {
             <div className="flex flex-col space-y-4">
               <Link
                 href="/products"
-                className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Products
               </Link>
               <Link
                 href="/services"
-                className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Services
               </Link>
               <Link
                 href="/research"
-                className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Research
               </Link>
               <Link
                 href="/about"
-                className="text-base font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 About Us
@@ -135,7 +136,7 @@ export function Header() {
               {isAdmin && (
                 <Link
                   href="/admin"
-                  className="text-base font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                  className="text-base font-medium text-[#193660] hover:text-blue-700 transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Admin Dashboard
@@ -143,7 +144,7 @@ export function Header() {
               )}
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Contact

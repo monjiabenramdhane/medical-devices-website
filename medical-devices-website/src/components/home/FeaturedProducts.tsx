@@ -44,11 +44,11 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                 </div>
                 <div className="p-6">
                   {product.gamme && (
-                    <span className="inline-block px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full mb-2">
+                    <span className="inline-block px-3 py-1 text-xs font-semibold text-[#193660] bg-blue-100 rounded-full mb-2">
                       {product.gamme}
                     </span>
                   )}
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
                     {product.name}
                   </h3>
                   {product.shortDescription && (
@@ -56,7 +56,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                       {product.shortDescription}
                     </p>
                   )}
-                  <div className="mt-4 flex items-center text-blue-600 font-medium group-hover:underline">
+                  <div className="mt-4 flex items-center text-[#193660] font-medium group-hover:underline">
                     Learn More
                     <svg
                       className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform"
@@ -81,7 +81,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
         <div className="text-center mt-12">
           <Link
             href="/products"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
           >
             View All Products
           </Link>

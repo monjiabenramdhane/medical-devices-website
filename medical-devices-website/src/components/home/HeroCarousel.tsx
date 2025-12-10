@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  Pause,
+} from 'lucide-react';
 import type { HeroSlide } from '@/types';
 
 interface HeroCarouselProps {
@@ -38,9 +43,11 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
     setIsAutoPlaying(false);
   };
 
-  if (!slides || slides.length === 0) {
-    return null;
-  }
+  const toggleAutoplay = () => {
+    setIsAutoPlaying((prev) => !prev);
+  };
+
+  if (!slides.length) return null;
 
   const currentSlide = slides[currentIndex];
 
@@ -51,35 +58,74 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
       aria-roledescription="carousel"
     >
       <div className="relative h-[500px] lg:h-[600px]">
-        {/* Slide Content */}
         <div className="absolute inset-0 flex items-center">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              {/* Text Content */}
+              
+              {/* TEXT + CONTROLS */}
               <div className="text-left">
                 {currentSlide.subtitle && (
-                  <p className="text-blue-600 font-semibold text-sm uppercase tracking-wide mb-2">
+                  <p className="text-[#193660] font-semibold text-sm uppercase mb-2">
                     {currentSlide.subtitle}
                   </p>
                 )}
+
                 <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4">
                   {currentSlide.title}
                 </h1>
-                <p className="text-lg text-gray-600 mb-8 max-w-2xl">
+
+                <p className="text-lg text-gray-600 mb-6 max-w-2xl">
                   {currentSlide.description}
                 </p>
+
                 {currentSlide.ctaText && currentSlide.ctaLink && (
                   <Link
                     href={currentSlide.ctaLink}
-                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center px-5 py-2 mb-10
+                               rounded-3xl bg-[#193660] text-white font-medium
+                               hover:bg-[#193660]/90 transition-colors"
                   >
                     {currentSlide.ctaText}
                   </Link>
                 )}
+
+                {/* ✅ CONTROLS ROW */}
+                {slides.length > 1 && (
+                  <div className="flex items-center gap-2">
+                    {/* Pagination */}
+                    <div className="flex items-center gap-2">
+                      {slides.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => goToSlide(index)}
+                          className={`w-3 h-3 rounded-full transition-colors ${
+                            index === currentIndex
+                              ? 'bg-[#193660]'
+                              : 'bg-[#193660]/40 hover:bg-[#193660] w-2 h-2'
+                          }`}
+                          aria-label={`Go to slide ${index + 1}`}
+                          aria-current={index === currentIndex}
+                        />
+                      ))}
+                    </div>
+                    {/* Play / Pause */}
+                    <button
+                      onClick={toggleAutoplay}
+                      className="flex items-center gap-2 bg-transparent rounded-full transition"
+                      aria-label={isAutoPlaying ? 'Pause autoplay' : 'Play autoplay'}
+                    >
+                      {isAutoPlaying ? (
+                        <Pause className="w-5 h-5 text-[#193660]" />
+                      ) : (
+                        <Play className="w-5 h-5 text-[#193660]" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {/* Image */}
-              <div className="relative h-64 lg:h-96">
+              {/* IMAGE */}
+              <div className="relative h-64 lg:h-[600px]">
                 <img
                   src={currentSlide.imageUrl}
                   alt={currentSlide.imageAlt}
@@ -90,43 +136,27 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
           </div>
         </div>
 
-        {/* Navigation Arrows */}
+        {/* ARROWS (optional – still centered vertically) */}
         {slides.length > 1 && (
           <>
             <button
               onClick={goToPrevious}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-colors z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2
+                         bg-white/80 p-2 rounded-full shadow hover:bg-white"
               aria-label="Previous slide"
             >
-              <ChevronLeft className="h-6 w-6 text-gray-900" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
+
             <button
               onClick={goToNext}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition-colors z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2
+                         bg-white/80 p-2 rounded-full shadow hover:bg-white"
               aria-label="Next slide"
             >
-              <ChevronRight className="h-6 w-6 text-gray-900" />
+              <ChevronRight className="w-6 h-6" />
             </button>
           </>
-        )}
-
-        {/* Indicators */}
-        {slides.length > 1 && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === currentIndex
-                    ? 'bg-blue-600'
-                    : 'bg-white/60 hover:bg-white'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-                aria-current={index === currentIndex}
-              />
-            ))}
-          </div>
         )}
       </div>
     </section>

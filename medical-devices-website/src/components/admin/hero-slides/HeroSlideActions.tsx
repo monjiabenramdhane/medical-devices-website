@@ -33,7 +33,7 @@ export function HeroSlideActions({ slideId }: HeroSlideActionsProps) {
     <div className="flex justify-end space-x-4">
       <Link
         href={`/admin/hero-slides/${slideId}`}
-        className="text-blue-600 hover:text-blue-900"
+        className="text-[#193660] hover:text-blue-900"
         title="Edit"
       >
         <EditIcon className="inline h-4 w-4" />

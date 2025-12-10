@@ -6,17 +6,18 @@ import { ChevronRight, Layers } from 'lucide-react';
 import type { Metadata } from 'next';
 
 interface EquipmentTypePageProps {
-  params: {
+  params: Promise<{
     brandSlug: string;
-    equipmentTypeSlug: string;
-  };
+    equipmentSlug: string;
+  }>;
 }
 
 export async function generateMetadata({ params }: EquipmentTypePageProps): Promise<Metadata> {
+  const { brandSlug, equipmentSlug: equipmentTypeSlug } = await params;
   const equipmentType = await prisma.equipmentType.findFirst({
     where: {
-      slug: params.equipmentTypeSlug,
-      brand: { slug: params.brandSlug },
+      slug: equipmentTypeSlug,
+      brand: { slug: brandSlug },
     },
     include: { brand: true },
   });
@@ -35,10 +36,11 @@ export async function generateMetadata({ params }: EquipmentTypePageProps): Prom
 export const dynamic = 'force-dynamic';
 
 export default async function EquipmentTypePage({ params }: EquipmentTypePageProps) {
+  const { brandSlug, equipmentSlug: equipmentTypeSlug } = await params;
   const equipmentType = await prisma.equipmentType.findFirst({
     where: {
-      slug: params.equipmentTypeSlug,
-      brand: { slug: params.brandSlug },
+      slug: equipmentTypeSlug,
+      brand: { slug: brandSlug },
       isActive: true,
     },
     include: {
@@ -154,7 +156,7 @@ export default async function EquipmentTypePage({ params }: EquipmentTypePagePro
               {equipmentType.subcategories.map((subcategory) => (
                 <Link
                   key={subcategory.id}
-                  href={`/brands/${params.brandSlug}/${params.equipmentTypeSlug}/${subcategory.slug}`}
+                  href={`/brands/${brandSlug}/${equipmentTypeSlug}/${subcategory.slug}`}
                   className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden border border-gray-200 hover:border-blue-500"
                 >
                   <div className="p-6">

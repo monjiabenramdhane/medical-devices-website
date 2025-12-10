@@ -2,7 +2,7 @@ export interface HeroSlide {
   id: string;
   title: string;
   subtitle?: string | null;
-  description: string;
+  description: string | null;
   ctaText?: string | null;
   ctaLink?: string | null;
   imageUrl: string;
@@ -16,7 +16,7 @@ export interface HeroSlide {
 export interface CreateHeroSlideInput {
   title: string;
   subtitle?: string;
-  description: string;
+  description?: string;
   ctaText?: string;
   ctaLink?: string;
   imageUrl: string;
@@ -25,4 +25,4 @@ export interface CreateHeroSlideInput {
   isActive?: boolean;
 }
 
-export interface UpdateHeroSlideInput extends Partial<CreateHeroSlideInput> {}
+export interface UpdateHeroSlideInput extends Partial<CreateHeroSlideInput> { }

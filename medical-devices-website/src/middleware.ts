@@ -1,7 +1,7 @@
-// /middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { getLocaleFromRequest } from '@/lib/i18n/get-locale-from-request';
 
 const ADMIN_LOGIN_PATH = '/admin/login';
 
@@ -13,9 +13,14 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next();
     }
 
+    // Locale detection
+    const locale = getLocaleFromRequest(req);
+
     // Always allow the login page (exact match and with trailing slash)
     if (pathname === ADMIN_LOGIN_PATH || pathname === `${ADMIN_LOGIN_PATH}/`) {
-        return NextResponse.next();
+        const response = NextResponse.next();
+        response.headers.set('Content-Language', locale);
+        return response;
     }
 
     // Protect admin routes
@@ -33,7 +38,10 @@ export async function middleware(req: NextRequest) {
         }
     }
 
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set('Content-Language', locale);
+    response.headers.set('Vary', 'Accept-Language, Cookie');
+    return response;
 }
 
 export const config = {

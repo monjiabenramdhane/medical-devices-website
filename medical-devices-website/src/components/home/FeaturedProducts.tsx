@@ -32,7 +32,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
               className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden"
             >
               <Link
-                href={`/brands/${product.brand?.slug}/${product.equipmentType?.slug}/${product.subcategory?.slug}/${product.slug}`}
+                href={`/brands/${product.brand?.slug}/${product.equipmentType?.slug || (product.subcategory as any)?.equipmentType?.slug}/${product.subcategory?.slug}/${product.slug}`}
                 className="block"
               >
                 <div className="aspect-w-16 aspect-h-9 bg-gray-200">

@@ -6,12 +6,13 @@ import { ChevronRight, Package } from 'lucide-react';
 import type { Metadata } from 'next';
 
 interface BrandPageProps {
-  params: {
+  params: Promise<{
     brandSlug: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: BrandPageProps): Promise<Metadata> {
+export async function generateMetadata(props: BrandPageProps): Promise<Metadata> {
+  const params = await props.params;
   const brand = await BrandService.getBySlug(params.brandSlug);
   
   if (!brand) {
@@ -27,7 +28,8 @@ export async function generateMetadata({ params }: BrandPageProps): Promise<Meta
 
 export const dynamic = 'force-dynamic'; // Enable SSR
 
-export default async function BrandPage({ params }: BrandPageProps) {
+export default async function BrandPage(props: BrandPageProps) {
+  const params = await props.params;
   const brand = await BrandService.getBySlug(params.brandSlug);
 
   if (!brand) {

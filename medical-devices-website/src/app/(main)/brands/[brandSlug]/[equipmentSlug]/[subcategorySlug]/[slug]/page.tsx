@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma';
 import { generateMetadata as genMeta } from '@/lib/utils';
 import { ChevronRight, Package } from 'lucide-react';
 import type { Metadata } from 'next';
+import { getLocalizedProduct } from '@/lib/i18n/localized-product-service';
+import { getLocale } from '@/lib/i18n/locale-resolver';
+import { getTranslationsByCategory } from '@/lib/i18n/translation-service';
 
 interface DynamicSlugPageProps {
   params: Promise<{
@@ -16,6 +19,7 @@ interface DynamicSlugPageProps {
 
 export async function generateMetadata({ params }: DynamicSlugPageProps): Promise<Metadata> {
   const { brandSlug, equipmentSlug: equipmentTypeSlug, subcategorySlug, slug } = await params;
+  const locale = await getLocale();
 
   // Try to find as series first
   const series = await prisma.series.findFirst({
@@ -48,25 +52,8 @@ export async function generateMetadata({ params }: DynamicSlugPageProps): Promis
     });
   }
 
-  // Try to find as product
-  const product = await prisma.product.findFirst({
-    where: {
-      slug: slug,
-      subcategory: {
-        slug: subcategorySlug,
-        equipmentType: {
-          slug: equipmentTypeSlug,
-          brand: { slug: brandSlug },
-        },
-      },
-    },
-    include: {
-      brand: true,
-      equipmentType: true,
-      subcategory: true,
-      series: true,
-    },
-  });
+  // Try to find as product using localized service
+  const product = await getLocalizedProduct(slug, locale);
 
   if (product) {
     return genMeta({
@@ -84,6 +71,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) {
   const { brandSlug, equipmentSlug: equipmentTypeSlug, subcategorySlug, slug } = await params;
+  const locale = await getLocale();
+  const uiTranslations = await getTranslationsByCategory(locale, 'ui');
+
+  const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
 
   // Try to find as series first
   const series = await prisma.series.findFirst({
@@ -111,6 +102,9 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
         orderBy: { order: 'asc' },
         include: {
           brand: true,
+          translations: {
+             where: { locale: { in: [locale, 'en'] } },
+          },
           gallery: {
             orderBy: { order: 'asc' },
             take: 1,
@@ -121,10 +115,32 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
   });
 
   // If found as series, render series page
+  // Note: Series content is not deeply localized yet, but we can localize listing products
   if (series) {
     const brand = series.subcategory!.equipmentType.brand;
     const equipmentType = series.subcategory!.equipmentType;
     const subcategory = series.subcategory!;
+
+    // Map series products with basic localization fallback
+    interface SeriesProduct {
+      name: string;
+      shortDescription: string | null;
+      translations: {
+        locale: string;
+        name: string;
+        shortDescription: string | null;
+      }[];
+    }
+
+    const localizedSeriesProducts = series.products.map((p) => {
+       const translations = p.translations as SeriesProduct['translations'];
+       const trans = translations.find((t) => t.locale === locale) || translations.find((t) => t.locale === 'en');
+       return {
+         ...p,
+         name: trans?.name || p.name,
+         shortDescription: trans?.shortDescription || p.shortDescription
+       };
+    });
 
     return (
       <div className="bg-white">
@@ -200,10 +216,10 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                     <p>{series.description}</p>
                   </div>
                 )}
-                {series.products && series.products.length > 0 && (
+                {localizedSeriesProducts.length > 0 && (
                   <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
                     <Package className="h-5 w-5 mr-2" />
-                    {series.products.length} {series.products.length === 1 ? 'product' : 'products'} in this series
+                    {localizedSeriesProducts.length} {localizedSeriesProducts.length === 1 ? 'product' : 'products'} in this series
                   </div>
                 )}
               </div>
@@ -227,14 +243,14 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
               Products in {series.name}
             </h2>
 
-            {!series.products || series.products.length === 0 ? (
+            {localizedSeriesProducts.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
                 <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">No products available in this series yet.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {series.products.map((product) => (
+                {localizedSeriesProducts.map((product) => (
                   <article
                     key={product.id}
                     className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden"
@@ -287,39 +303,14 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
     );
   }
 
-  // Try to find as product
-  const product = await prisma.product.findFirst({
-    where: {
-      slug: slug,
-      subcategory: {
-        slug: subcategorySlug,
-        equipmentType: {
-          slug: equipmentTypeSlug,
-          brand: { slug: brandSlug },
-        },
-      },
-      isActive: true,
-    },
-    include: {
-      brand: true,
-      equipmentType: true,
-      subcategory: true,
-      series: true,
-      gallery: {
-        orderBy: { order: 'asc' },
-      },
-      sections: {
-        orderBy: { order: 'asc' },
-      },
-      specifications: {
-        orderBy: { order: 'asc' },
-      },
-    },
-  });
+  // Try to find as product using service
+  const product = await getLocalizedProduct(slug, locale);
 
   if (!product) {
     notFound();
   }
+
+  // Note: product.sections and specifications are already included by getLocalizedProduct
 
   // Render product page
   return (
@@ -439,19 +430,28 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                   {product.shortDescription}
                 </p>
               )}
+              {/* Full Description - Added if available, though not in original, good for SEO */}
+              {product.fullDescription && (
+                 <div className="prose prose-lg text-gray-700 mb-8">
+                   <p>{product.fullDescription}</p>
+                 </div>
+              )}
+
               <div className="flex flex-wrap gap-4 mb-8">
                 <a
                   href="#contact"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
                 >
-                  Request Quote
+                  {t('ui.requestQuote', 'Request Quote')}
                 </a>
-                <a
-                  href="#specifications"
-                  className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                >
-                  View Specifications
-                </a>
+                {product.specifications && product.specifications.length > 0 && (
+                  <a
+                    href="#specifications"
+                    className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  >
+                    {t('ui.learnMore', 'View Specifications')}
+                  </a>
+                )}
               </div>
             </div>
           </div>

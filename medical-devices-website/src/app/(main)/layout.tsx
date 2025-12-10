@@ -1,4 +1,6 @@
 import { AppShell } from '@/components/layout/AppShell';
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 
 export default function MainLayout({
   children,
@@ -6,7 +8,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <AppShell>
+    <AppShell header={<Header />} footer={<Footer />}>
       {children}
     </AppShell>
   );

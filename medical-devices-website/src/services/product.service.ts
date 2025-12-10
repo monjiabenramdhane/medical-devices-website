@@ -15,7 +15,7 @@ export class ProductService {
     skip?: number;
   }): Promise<Product[]> {
     const where: any = {};
-    
+
     if (filters?.brandId) where.brandId = filters.brandId;
     if (filters?.equipmentTypeId) where.equipmentTypeId = filters.equipmentTypeId;
     if (filters?.subcategoryId) where.subcategoryId = filters.subcategoryId;
@@ -30,7 +30,11 @@ export class ProductService {
       include: {
         brand: true,
         equipmentType: true,
-        subcategory: true,
+        subcategory: {
+          include: {
+            equipmentType: true,
+          },
+        },
         series: true,
         gallery: {
           orderBy: { order: 'asc' },

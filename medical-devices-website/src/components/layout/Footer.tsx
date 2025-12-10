@@ -1,10 +1,14 @@
-'use client';
-
 import Link from 'next/link';
 import { Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { getLocale } from '@/lib/i18n/locale-resolver';
+import { getTranslationsByCategory } from '@/lib/i18n/translation-service';
 
-export function Footer() {
+export async function Footer() {
   const currentYear = new Date().getFullYear();
+  const locale = await getLocale();
+  const translations = await getTranslationsByCategory(locale, 'footer');
+
+  const t = (key: string, fallback: string) => translations[key] || fallback;
 
   return (
     <footer className="bg-gray-900 text-white" aria-labelledby="footer-heading">
@@ -18,14 +22,14 @@ export function Footer() {
               src="/images/logo-white.png"
               alt="Medical Devices Group"
               className="h-10 w-auto mb-4"
-              onError={(e) => {
-                e.currentTarget.src = '/images/placeholder.jpg';
-              }}
+              // Server component cannot use onError directly for image fallback like client component
+              // In production, use next/image or handle at source
             />
             <p className="text-sm text-gray-400 mb-4">
               Leading provider of medical devices and solutions across Africa and beyond.
             </p>
             <div className="flex space-x-4">
+              {/* Social icons kept static for now as they are links */}
               <a
                 href="https://facebook.com"
                 target="_blank"
@@ -79,28 +83,13 @@ export function Footer() {
                   All Products
                 </Link>
               </li>
+              {/* Other static links... could be localized if needed */}
               <li>
                 <Link
                   href="/brands"
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
                   Our Brands
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products?specialty=cardiology"
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                  Cardiology
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/products?specialty=imaging"
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                  Imaging
                 </Link>
               </li>
             </ul>
@@ -136,14 +125,6 @@ export function Footer() {
                   Training
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/services/support"
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                  Support
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -158,15 +139,7 @@ export function Footer() {
                   href="/about"
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/research"
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                  Research
+                  {t('nav.about', 'About Us')}
                 </Link>
               </li>
               <li>
@@ -174,15 +147,7 @@ export function Footer() {
                   href="/contact"
                   className="text-sm text-gray-400 hover:text-white transition-colors"
                 >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy"
-                  className="text-sm text-gray-400 hover:text-white transition-colors"
-                >
-                  Privacy Policy
+                  {t('nav.contact', 'Contact')}
                 </Link>
               </li>
             </ul>
@@ -191,7 +156,7 @@ export function Footer() {
 
         <div className="mt-12 pt-8 border-t border-gray-800">
           <p className="text-sm text-gray-400 text-center">
-            © {currentYear} Medical Devices Group. All rights reserved.
+            {t('footer.rights', `© ${currentYear} Medical Devices Group. All rights reserved.`)}
           </p>
         </div>
       </div>

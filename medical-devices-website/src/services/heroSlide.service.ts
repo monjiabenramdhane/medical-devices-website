@@ -37,4 +37,27 @@ export class HeroSlideService {
       where: { id },
     });
   }
+
+  static async getLocalized(locale: string = 'en'): Promise<HeroSlide[]> {
+    const slides = await prisma.heroSlide.findMany({
+      where: { isActive: true },
+      include: {
+        hero_slide_translations: {
+          where: { locale },
+        },
+      },
+      orderBy: { order: 'asc' },
+    });
+
+    return slides.map(slide => {
+      const translation = slide.hero_slide_translations[0];
+      return {
+        ...slide,
+        title: translation?.title || slide.title,
+        subtitle: translation?.subtitle || slide.subtitle,
+        description: translation?.description || slide.description,
+        ctaText: translation?.ctaText || slide.ctaText,
+      };
+    });
+  }
 }

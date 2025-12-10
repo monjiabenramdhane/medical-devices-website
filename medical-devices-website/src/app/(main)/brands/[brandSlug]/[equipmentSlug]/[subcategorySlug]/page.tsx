@@ -6,20 +6,22 @@ import { ChevronRight, FolderTree, Package } from 'lucide-react';
 import type { Metadata } from 'next';
 
 interface SubcategoryPageProps {
-  params: {
+  params: Promise<{
     brandSlug: string;
-    equipmentTypeSlug: string;
+    equipmentSlug: string;
     subcategorySlug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({ params }: SubcategoryPageProps): Promise<Metadata> {
+  const { brandSlug, equipmentSlug: equipmentTypeSlug, subcategorySlug } = await params;
+  
   const subcategory = await prisma.subcategory.findFirst({
     where: {
-      slug: params.subcategorySlug,
+      slug: subcategorySlug,
       equipmentType: {
-        slug: params.equipmentTypeSlug,
-        brand: { slug: params.brandSlug },
+        slug: equipmentTypeSlug,
+        brand: { slug: brandSlug },
       },
     },
     include: {
@@ -42,12 +44,14 @@ export async function generateMetadata({ params }: SubcategoryPageProps): Promis
 export const dynamic = 'force-dynamic';
 
 export default async function SubcategoryPage({ params }: SubcategoryPageProps) {
+  const { brandSlug, equipmentSlug: equipmentTypeSlug, subcategorySlug } = await params;
+  
   const subcategory = await prisma.subcategory.findFirst({
     where: {
-      slug: params.subcategorySlug,
+      slug: subcategorySlug,
       equipmentType: {
-        slug: params.equipmentTypeSlug,
-        brand: { slug: params.brandSlug },
+        slug: equipmentTypeSlug,
+        brand: { slug: brandSlug },
       },
       isActive: true,
     },
@@ -102,7 +106,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <li>
               <Link
-                href={`/brands/${params.brandSlug}`}
+                href={`/brands/${brandSlug}`}
                 className="text-gray-500 hover:text-gray-700"
               >
                 {subcategory.equipmentType.brand.name}
@@ -111,7 +115,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <li>
               <Link
-                href={`/brands/${params.brandSlug}/${params.equipmentTypeSlug}`}
+                href={`/brands/${brandSlug}/${equipmentTypeSlug}`}
                 className="text-gray-500 hover:text-gray-700"
               >
                 {subcategory.equipmentType.name}
@@ -134,7 +138,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
           <p className="text-lg text-gray-600 mb-4">
             {subcategory.equipmentType.name} •{' '}
             <Link
-              href={`/brands/${params.brandSlug}`}
+              href={`/brands/${brandSlug}`}
               className="text-[#193660] hover:underline"
             >
               {subcategory.equipmentType.brand.name}
@@ -159,7 +163,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
               {subcategory.series.map((series) => (
                 <Link
                   key={series.id}
-                  href={`/brands/${params.brandSlug}/${params.equipmentTypeSlug}/${params.subcategorySlug}/${series.slug}`}
+                  href={`/brands/${brandSlug}/${equipmentTypeSlug}/${subcategorySlug}/${series.slug}`}
                   className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden"
                 >
                   {series.imageUrl && (
@@ -205,7 +209,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
               {subcategory.products.map((product) => (
                 <Link
                   key={product.id}
-                  href={`/brands/${params.brandSlug}/${params.equipmentTypeSlug}/${params.subcategorySlug}/${product.slug}`}
+                  href={`/brands/${brandSlug}/${equipmentTypeSlug}/${subcategorySlug}/${product.slug}`}
                   className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden"
                 >
                   <div className="aspect-w-16 aspect-h-9 bg-gray-200">

@@ -1,9 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
-import { generateMetadata as genMeta } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
+import { getLocalizedProduct } from '@/lib/i18n/localized-product-service';
+import { getLocale } from '@/lib/i18n/locale-resolver';
+import { getTranslation, getTranslationsByCategory } from '@/lib/i18n/translation-service';
+import { headers } from 'next/headers';
 
 interface ProductSlugPageProps {
   params: Promise<{
@@ -12,60 +14,60 @@ interface ProductSlugPageProps {
 }
 
 export async function generateMetadata({ params }: ProductSlugPageProps): Promise<Metadata> {
+  const locale = await getLocale();
   const { slug } = await params;
-  const product = await prisma.product.findFirst({
-    where: { slug: slug, isActive: true },
-    include: { brand: true },
-  });
-  
+  const product = await getLocalizedProduct(slug, locale);
+
   if (!product) {
-    return {};
+    return {
+      title: await getTranslation(locale, 'meta.notFound', 'Page Not Found'),
+    };
   }
 
-  return genMeta({
-    title: product.metaTitle || `${product.name} | ${product.brand.name}`,
-    description: product.metaDescription || product.shortDescription || '',
-    keywords: product.metaKeywords || '',
-    image: product.heroImageUrl,
-  });
+  // Helper to get base URL
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3000';
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  const currentUrl = `${baseUrl}/products/${slug}`;
+
+  // Using simple hreflang approach since we rely on cookies for language switching
+  // but still want to signal availability
+  return {
+    title: product.metaTitle || product.name,
+    description: product.metaDescription || product.shortDescription,
+    alternates: {
+      canonical: currentUrl,
+      languages: {
+        'en': currentUrl,
+        'fr': currentUrl,
+        'x-default': currentUrl,
+      },
+    },
+    openGraph: {
+      title: product.metaTitle || product.name,
+      description: product.metaDescription || product.shortDescription || '',
+      locale: locale,
+    },
+  };
 }
 
 export const dynamic = 'force-dynamic';
 
 export default async function ProductSlugPage({ params }: ProductSlugPageProps) {
   const { slug } = await params;
-  const product = await prisma.product.findFirst({
-    where: {
-      slug: slug,
-      isActive: true,
-    },
-    include: {
-      brand: true,
-      equipmentType: true,
-      subcategory: true,
-      series: true,
-      gallery: {
-        orderBy: { order: 'asc' },
-      },
-      sections: {
-        orderBy: { order: 'asc' },
-      },
-      specifications: {
-        orderBy: { order: 'asc' },
-      },
-    },
-  });
+  const locale = await getLocale();
+  
+  const [product, uiTranslations] = await Promise.all([
+    getLocalizedProduct(slug, locale),
+    getTranslationsByCategory(locale, 'ui'),
+  ]);
 
   if (!product) {
     notFound();
   }
 
-  // Redirect to proper hierarchy URL if all parts exist
-  if (product.brand && product.equipmentType && product.subcategory) {
-    const properUrl = `/brands/${product.brand.slug}/${product.equipmentType.slug}/${product.subcategory.slug}/${product.slug}`;
-    // In a real implementation, you'd use Next.js redirect here
-    // For now, we'll just display the product
-  }
+  const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
 
   return (
     <div className="bg-white">
@@ -127,7 +129,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
                     >
                       <img
                         src={image.url}
-                        alt={image.alt}
+                        alt={image.alt || ''}
                         className="w-full h-full object-cover"
                       />
                     </button>
@@ -175,9 +177,9 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
                     </Link>
                   </p>
                 )}
-                {product.series && (
+                {product.seriesId && (
                   <p className="text-sm text-gray-500">
-                    Part of {product.series.name} Series
+                    Part of Series
                   </p>
                 )}
               </div>
@@ -202,14 +204,14 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
                   href="#contact"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
                 >
-                  Request Quote
+                  {t('ui.requestQuote', 'Request Quote')}
                 </a>
                 {product.specifications && product.specifications.length > 0 && (
                   <a
                     href="#specifications"
                     className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                   >
-                    View Specifications
+                    {t('ui.learnMore', 'View Specifications')}
                   </a>
                 )}
               </div>
@@ -301,13 +303,13 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
               href="/contact"
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
             >
-              Contact Us
+              {t('ui.contactUs', 'Contact Us')}
             </Link>
             <Link
               href="/products"
               className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
-              View All Products
+              {t('ui.viewProducts', 'View All Products')}
             </Link>
           </div>
         </div>

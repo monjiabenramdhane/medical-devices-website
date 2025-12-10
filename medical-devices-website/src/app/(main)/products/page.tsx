@@ -52,7 +52,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       include: {
         brand: true,
         equipmentType: true,
-        subcategory: true,
+        subcategory: {
+          include: {
+            equipmentType: true,
+          },
+        },
         series: true,
       },
       orderBy: [
@@ -244,8 +248,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                     >
                       <Link
                         href={
-                          product.brand && product.equipmentType && product.subcategory
-                            ? `/brands/${product.brand.slug}/${product.equipmentType.slug}/${product.subcategory.slug}/${product.slug}`
+                          product.brand && (product.equipmentType || (product.subcategory as any)?.equipmentType) && product.subcategory
+                            ? `/brands/${product.brand.slug}/${product.equipmentType?.slug || (product.subcategory as any)?.equipmentType?.slug}/${product.subcategory.slug}/${product.slug}`
                             : `/products/${product.slug}`
                         }
                         className="block"

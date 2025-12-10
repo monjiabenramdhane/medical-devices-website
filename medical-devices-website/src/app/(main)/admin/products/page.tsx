@@ -10,7 +10,11 @@ export default async function ProductsPage() {
     include: {
       brand: true,
       equipmentType: true,
-      subcategory: true,
+      subcategory: {
+        include: {
+          equipmentType: true,
+        },
+      },
       series: true,
     },
     orderBy: { order: 'asc' },
@@ -112,7 +116,7 @@ export default async function ProductsPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      href={`/brands/${product.brand.slug}/${product.equipmentType?.slug}/${product.subcategory?.slug}/${product.slug}`}
+                      href={`/brands/${product.brand.slug}/${product.equipmentType?.slug || (product.subcategory as any)?.equipmentType?.slug}/${product.subcategory?.slug}/${product.slug}`}
                       className="text-gray-600 hover:text-gray-900 mr-3"
                       target="_blank"
                     >

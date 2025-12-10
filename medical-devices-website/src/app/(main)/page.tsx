@@ -2,11 +2,12 @@ import { HeroCarousel } from '@/components/home/HeroCarousel';
 import { FeaturedProducts } from '@/components/home/FeaturedProducts';
 import { BrandCarousel } from '@/components/home/BrandCarousel';
 import { FacesBehindDevice } from '@/components/home/FacesBehindDevice';
-import { HeroSlideService } from '@/services/heroSlide.service';
 import { HomeSectionService } from '@/services/homeSection.service';
 import { ProductService } from '@/services/product.service';
 import { BrandService } from '@/services/brand.service';
 import { generateMetadata as genMeta } from '@/lib/utils';
+import { getLocale } from '@/lib/i18n/locale-resolver';
+import { getLocalizedHeroSlides } from '@/lib/i18n/localized-hero-service';
 
 export const metadata = genMeta({
   title: 'Medical Devices Group - Leading Healthcare Solutions',
@@ -18,14 +19,14 @@ export const metadata = genMeta({
 export const experimental_ppr = true;
 
 export default async function HomePage() {
+  const locale = await getLocale();
   // Fetch data in parallel
   const [heroSlides, featuredProducts, brands, facesBehindDeviceSection] = await Promise.all([
-    HeroSlideService.getAll(true),
+    getLocalizedHeroSlides(locale), 
     ProductService.getFeatured(6),
     BrandService.getAll(true),
-    HomeSectionService.getByKey('about'),
+    HomeSectionService.getLocalizedByKey('about', locale),
   ]);
-console.log(featuredProducts);
   return (
     <>
       <HeroCarousel slides={heroSlides} />

@@ -1,0 +1,26 @@
+services:
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: libretranslate
+    restart: unless-stopped
+    ports:
+      - "5000:5000"  # Only accessible internally
+    environment:
+      - LT_HOST=0.0.0.0
+      - LT_PORT=5000
+      - LT_DISABLE_WEB_UI=true
+      - LT_API_KEYS=false
+      - LT_SUGGESTIONS=false
+      - LT_CHAR_LIMIT=5000
+      - LT_LOAD_ONLY=en,fr
+    networks:
+      - internal
+    volumes:
+      - libretranslate_data:/home/libretranslate/.local
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  libretranslate_data:

@@ -59,13 +59,6 @@ export function HeaderClient({ translations }: HeaderClientProps) {
             </div>
 
             <Link
-              href="/research"
-              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
-            >
-              Research
-            </Link>
-
-            <Link
               href="/about"
               className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
             >

@@ -38,20 +38,23 @@ export async function middleware(req: NextRequest) {
         }
     }
 
-    const response = NextResponse.next();
-    response.headers.set('Content-Language', locale);
-    response.headers.set('Vary', 'Accept-Language, Cookie');
-    return response;
+  // Set locale for all responses
+  const response = NextResponse.next();
+  response.headers.set('Content-Language', locale);
+  response.headers.set('Vary', 'Accept-Language, Cookie');
+  
+  // Ensure locale cookie is set
+  if (!req.cookies.get('NEXT_LOCALE')) {
+    response.cookies.set('NEXT_LOCALE', locale, {
+      maxAge: 60 * 60 * 24 * 365, // 1 year
+      path: '/',
+      sameSite: 'lax',
+    });
+  }
+
+  return response;
 }
 
 export const config = {
-    matcher: [
-        /*
-         * Match all request paths except for the ones starting with:
-         * - _next/static (static files)
-         * - _next/image (image optimization files)
-         * - favicon.ico (favicon file)
-         */
-        '/((?!_next/static|_next/image|favicon.ico).*)',
-    ],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

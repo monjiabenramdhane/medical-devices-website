@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
+import { translateService } from '@/lib/translation/libretranslate';
+import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 import type { ApiResponse } from '@/types';
 
 export async function GET(
@@ -25,6 +27,7 @@ export async function GET(
                 specifications: {
                     orderBy: { order: 'asc' },
                 },
+                translations: true,
             },
         });
 
@@ -59,16 +62,55 @@ export async function PUT(
         const body = await req.json();
         const { gallery, ...productData } = body;
 
-        // Update product
+        // Process translations and auto-fill missing locales
+        const { localizedData } = await translateService.processProductContent(productData);
+
+        // Prepare the main product data using the default locale (English)
+        const mainDetails = localizedData[DEFAULT_LOCALE] || localizedData[Object.keys(localizedData)[0]] || productData;
+
+        // Prepare translation entries
+        const translationsData = Object.entries(localizedData).map(([locale, content]) => ({
+            productId: id,
+            locale,
+            name: content.name || '',
+            shortDescription: content.shortDescription,
+            fullDescription: content.fullDescription,
+            metaTitle: content.metaTitle,
+            metaDescription: content.metaDescription,
+            heroImageAlt: content.heroImageAlt ?? null,
+            metaKeywords: content.metaKeywords ?? null,
+        }));
+
+        // Validating data before update?
+        // Basic update of main fields
         const product = await prisma.product.update({
             where: { id },
             data: {
                 ...productData,
+                // Overwrite text fields with the default locale version
+                name: mainDetails.name,
+                shortDescription: mainDetails.shortDescription,
+                fullDescription: mainDetails.fullDescription,
+                metaTitle: mainDetails.metaTitle,
+                metaDescription: mainDetails.metaDescription,
+                heroImageAlt: mainDetails.heroImageAlt,
+                metaKeywords: mainDetails.metaKeywords,
+
                 // Handle optional relationships
                 equipmentTypeId: productData.equipmentTypeId || null,
                 subcategoryId: productData.subcategoryId || null,
                 seriesId: productData.seriesId || null,
             },
+        });
+
+        // Update Translations: Delete existing and create new ones to ensure consistency
+        // This handles both adding new supported locales and updating content
+        await prisma.productTranslation.deleteMany({
+            where: { productId: id },
+        });
+
+        await prisma.productTranslation.createMany({
+            data: translationsData,
         });
 
         // Update gallery if provided
@@ -91,7 +133,7 @@ export async function PUT(
             }
         }
 
-        // Fetch complete product with gallery
+        // Fetch complete product with gallery and translations
         const completeProduct = await prisma.product.findUnique({
             where: { id },
             include: {
@@ -102,6 +144,7 @@ export async function PUT(
                 gallery: {
                     orderBy: { order: 'asc' },
                 },
+                translations: true,
             },
         });
 
@@ -128,6 +171,7 @@ export async function DELETE(
         await requireAdmin();
 
         // Prisma will cascade delete related gallery images, sections, and specifications
+        // translations are also cascade deleted as per schema
         await prisma.product.delete({
             where: { id },
         });

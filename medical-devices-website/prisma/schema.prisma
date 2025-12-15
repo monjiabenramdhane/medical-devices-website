@@ -288,6 +288,8 @@ model ProductTranslation {
   metaDescription  String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  heroImageAlt     String?
+  metaKeywords     String?
   product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@unique([productId, locale])

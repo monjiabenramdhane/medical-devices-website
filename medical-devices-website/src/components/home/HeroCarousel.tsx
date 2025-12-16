@@ -53,7 +53,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
 
   return (
     <section
-      className="relative bg-gray-100 overflow-hidden"
+      className="relative bg-[#c8e6ee]/70 overflow-hidden"
       aria-label="Hero carousel"
       aria-roledescription="carousel"
     >
@@ -65,12 +65,12 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
               {/* TEXT + CONTROLS */}
               <div className="text-left">
                 {currentSlide.subtitle && (
-                  <p className="text-[#193660] font-semibold text-sm uppercase mb-2">
+                  <p className="text-[#02445b] font-semibold text-sm uppercase mb-2">
                     {currentSlide.subtitle}
                   </p>
                 )}
 
-                <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4">
+                <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#02445b]  mb-4">
                   {currentSlide.title}
                 </h1>
 
@@ -82,8 +82,8 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
                   <Link
                     href={currentSlide.ctaLink}
                     className="inline-flex items-center px-5 py-2 mb-10
-                               rounded-3xl bg-[#193660] text-white font-medium
-                               hover:bg-[#193660]/90 transition-colors"
+                               rounded-3xl bg-[#02445b] text-white font-medium
+                               hover:bg-[#02445b]/90 transition-colors"
                   >
                     {currentSlide.ctaText}
                   </Link>
@@ -100,8 +100,8 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
                           onClick={() => goToSlide(index)}
                           className={`w-3 h-3 rounded-full transition-colors ${
                             index === currentIndex
-                              ? 'bg-[#193660]'
-                              : 'bg-[#193660]/40 hover:bg-[#193660] w-2 h-2'
+                              ? 'bg-[#02445b]'
+                              : 'bg-[#02445b]/40 hover:bg-[#02445b] w-2 h-2'
                           }`}
                           aria-label={`Go to slide ${index + 1}`}
                           aria-current={index === currentIndex}

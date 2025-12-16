@@ -128,7 +128,7 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center w-full px-4 py-2 mb-2 rounded-lg bg-[#193660] hover:bg-blue-700 transition-colors text-sm font-medium"
+                className="flex items-center w-full px-4 py-2 mb-2 rounded-lg bg-[#02445b] hover:bg-blue-700 transition-colors text-sm font-medium"
               >
                 <ExternalLink className="h-4 w-4 mr-2" />
                 View Website

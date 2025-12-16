@@ -3,9 +3,19 @@ import type { Product } from '@/types';
 
 interface FeaturedProductsProps {
   products: Product[];
+  title?: string;
+  description?: string;
+  viewAllText?: string;
+  learnMoreText?: string;
 }
 
-export function FeaturedProducts({ products }: FeaturedProductsProps) {
+export function FeaturedProducts({ 
+  products,
+  title = 'Featured Products',
+  description = 'Discover our most innovative medical devices',
+  viewAllText = 'View All Products',
+  learnMoreText = 'Learn More'
+}: FeaturedProductsProps) {
   if (!products || products.length === 0) {
     return null;
   }
@@ -16,13 +26,15 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
         <div className="text-center mb-12">
           <h2
             id="featured-heading"
-            className="text-3xl font-bold text-gray-900 sm:text-4xl"
+            className="text-3xl font-bold text-[#02445b]  sm:text-4xl"
           >
-            Featured Products
+            {title}
           </h2>
-          <p className="mt-4 text-lg text-gray-600">
-            Discover our most innovative medical devices
-          </p>
+          {description && (
+            <p className="mt-4 text-lg text-gray-600">
+              {description}
+            </p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -44,11 +56,11 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                 </div>
                 <div className="p-6">
                   {product.gamme && (
-                    <span className="inline-block px-3 py-1 text-xs font-semibold text-[#193660] bg-blue-100 rounded-full mb-2">
+                    <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full mb-2">
                       {product.gamme}
                     </span>
                   )}
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
+                  <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
                     {product.name}
                   </h3>
                   {product.shortDescription && (
@@ -56,8 +68,8 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                       {product.shortDescription}
                     </p>
                   )}
-                  <div className="mt-4 flex items-center text-[#193660] font-medium group-hover:underline">
-                    Learn More
+                  <div className="mt-4 flex items-center text-[#02445b] font-medium group-hover:underline">
+                    {learnMoreText}
                     <svg
                       className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform"
                       fill="none"
@@ -81,9 +93,9 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
         <div className="text-center mt-12">
           <Link
             href="/products"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
           >
-            View All Products
+            {viewAllText}
           </Link>
         </div>
       </div>

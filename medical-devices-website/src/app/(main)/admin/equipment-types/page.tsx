@@ -19,10 +19,10 @@ export default async function EquipmentTypesPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Equipment Types</h1>
+        <h1 className="text-3xl font-bold text-[#02445b] ">Equipment Types</h1>
         <Link
           href="/admin/equipment-types/new"
-          className="inline-flex items-center px-4 py-2 bg-[#193660] text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-[#02445b] text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-5 w-5 mr-2" />
           Add Equipment Type
@@ -34,7 +34,7 @@ export default async function EquipmentTypesPage() {
           <p className="text-gray-500 mb-4">No equipment types yet</p>
           <Link
             href="/admin/equipment-types/new"
-            className="inline-flex items-center px-4 py-2 bg-[#193660] text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-[#02445b] text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Create your first equipment type
           </Link>
@@ -68,7 +68,7 @@ export default async function EquipmentTypesPage() {
               {equipmentTypes.map((type) => (
                 <tr key={type.id}>
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{type.name}</div>
+                    <div className="text-sm font-medium text-[#02445b] ">{type.name}</div>
                     <div className="text-sm text-gray-500">{type.slug}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -94,7 +94,7 @@ export default async function EquipmentTypesPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
                       href={`/admin/equipment-types/${type.id}`}
-                      className="text-[#193660] hover:text-blue-900"
+                      className="text-[#02445b] hover:text-blue-900"
                     >
                       <Edit className="inline h-4 w-4" />
                     </Link>

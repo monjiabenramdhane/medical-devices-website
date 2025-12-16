@@ -6,10 +6,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Brand } from '@/types';
 
 interface BrandCarouselProps {
-  brands: Brand[];
+  brands: Brand[];    
+  title?: string;
+  description?: string;
+  viewAllText?: string;
 }
 
-export function BrandCarousel({ brands }: BrandCarouselProps) {
+export function BrandCarousel({ brands, title, description, viewAllText }: BrandCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!brands || brands.length === 0) {
@@ -38,12 +41,12 @@ export function BrandCarousel({ brands }: BrandCarouselProps) {
         <div className="text-center mb-12">
           <h2
             id="brands-heading"
-            className="text-3xl font-bold text-gray-900 sm:text-4xl"
+            className="text-3xl font-bold text-[#02445b]  sm:text-4xl"
           >
-            Our Brands
+            {title}
           </h2>
           <p className="mt-4 text-lg text-gray-600">
-            Partnering with the world's leading medical device manufacturers
+            {description}
           </p>
         </div>
 
@@ -60,7 +63,7 @@ export function BrandCarousel({ brands }: BrandCarouselProps) {
                   alt={brand.logoAlt}
                   className="h-20 w-auto object-contain mb-4"
                 />
-                <span className="text-sm font-medium text-gray-900 text-center">
+                <span className="text-sm font-medium text-[#02445b]  text-center">
                   {brand.name}
                 </span>
                 {brand.equipmentTypes && brand.equipmentTypes.length > 0 && (
@@ -79,14 +82,14 @@ export function BrandCarousel({ brands }: BrandCarouselProps) {
                 className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors"
                 aria-label="Previous brands"
               >
-                <ChevronLeft className="h-6 w-6 text-gray-900" />
+                <ChevronLeft className="h-6 w-6 text-[#02445b] " />
               </button>
               <button
                 onClick={goToNext}
                 className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white p-2 rounded-full shadow-lg hover:bg-gray-50 transition-colors"
                 aria-label="Next brands"
               >
-                <ChevronRight className="h-6 w-6 text-gray-900" />
+                <ChevronRight className="h-6 w-6 text-[#02445b] " />
               </button>
             </>
           )}
@@ -95,9 +98,9 @@ export function BrandCarousel({ brands }: BrandCarouselProps) {
         <div className="text-center mt-12">
           <Link
             href="/brands"
-            className="inline-flex items-center px-6 py-3 border border-[#193660] text-base font-medium rounded-md text-[#193660] bg-white hover:bg-blue-50 transition-colors"
+            className="inline-flex items-center px-6 py-3 border border-[#193660] text-base font-medium rounded-md text-[#02445b] bg-white hover:bg-blue-50 transition-colors"
           >
-            View All Brands
+            {viewAllText}
           </Link>
         </div>
       </div>

@@ -122,7 +122,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
               </Link>
             </li>
             <ChevronRight className="h-4 w-4 text-gray-400" />
-            <li className="text-gray-900 font-medium" aria-current="page">
+            <li className="text-[#02445b]  font-medium" aria-current="page">
               {subcategory.name}
             </li>
           </ol>
@@ -132,14 +132,14 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
       {/* Subcategory Header */}
       <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
             {subcategory.name}
           </h1>
           <p className="text-lg text-gray-600 mb-4">
             {subcategory.equipmentType.name} •{' '}
             <Link
               href={`/brands/${brandSlug}`}
-              className="text-[#193660] hover:underline"
+              className="text-[#02445b] hover:underline"
             >
               {subcategory.equipmentType.brand.name}
             </Link>
@@ -156,7 +156,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
       {hasSeries && (
         <section className="py-16 bg-gray-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
+            <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
               Product Series
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -176,7 +176,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
                     </div>
                   )}
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
+                    <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
                       {series.name}
                     </h3>
                     {series.description && (
@@ -188,7 +188,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
                       <span className="text-sm text-gray-500">
                         {series._count.products} products
                       </span>
-                      <ChevronRight className="h-5 w-5 text-[#193660] group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="h-5 w-5 text-[#02445b] group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>
@@ -202,7 +202,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
       {hasProducts && (
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
+            <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
               {hasSeries ? 'All Products' : 'Products'}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -221,11 +221,11 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
                   </div>
                   <div className="p-6">
                     {product.gamme && (
-                      <span className="inline-block px-3 py-1 text-xs font-semibold text-[#193660] bg-blue-100 rounded-full mb-2">
+                      <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full mb-2">
                         {product.gamme}
                       </span>
                     )}
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
+                    <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
                       {product.name}
                     </h3>
                     {product.shortDescription && (

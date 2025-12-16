@@ -1,3 +1,7 @@
+
+import { Product } from './product.type';
+import { Brand } from './brand.type';
+
 export interface HomeSection {
   id: string;
   sectionKey: string;
@@ -12,6 +16,8 @@ export interface HomeSection {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
+  products?: Product[];
+  brands?: Brand[];
 }
 
 export interface CreateHomeSectionInput {
@@ -25,6 +31,8 @@ export interface CreateHomeSectionInput {
   ctaLink?: string;
   order?: number;
   isActive?: boolean;
+  productIds?: string[];
+  brandIds?: string[];
 }
 
-export interface UpdateHomeSectionInput extends Partial<CreateHomeSectionInput> {}
+export interface UpdateHomeSectionInput extends Partial<CreateHomeSectionInput> { }

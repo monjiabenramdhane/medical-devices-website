@@ -153,7 +153,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
       {/* Basic Info */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+        <h3 className="text-lg font-semibold text-[#02445b]  mb-4">Basic Information</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -214,7 +214,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
       {/* Hierarchy */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Product Hierarchy</h3>
+        <h3 className="text-lg font-semibold text-[#02445b]  mb-4">Product Hierarchy</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -301,7 +301,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
       {/* Classification */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Classification</h3>
+        <h3 className="text-lg font-semibold text-[#02445b]  mb-4">Classification</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
@@ -347,7 +347,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
       {/* Images */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Images</h3>
+        <h3 className="text-lg font-semibold text-[#02445b]  mb-4">Images</h3>
         
         <ImageUpload
           value={formData.heroImageUrl}
@@ -381,7 +381,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
       {/* Settings */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Settings</h3>
+        <h3 className="text-lg font-semibold text-[#02445b]  mb-4">Settings</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
@@ -403,7 +403,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               id="isFeatured"
               checked={formData.isFeatured}
               onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-              className="h-4 w-4 text-[#193660] focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-[#02445b] focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="isFeatured" className="ml-2 block text-sm text-gray-700">
               Featured Product
@@ -416,7 +416,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               id="isActive"
               checked={formData.isActive}
               onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-              className="h-4 w-4 text-[#193660] focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-[#02445b] focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
               Active
@@ -427,7 +427,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
 
       {/* SEO */}
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">SEO</h3>
+        <h3 className="text-lg font-semibold text-[#02445b]  mb-4">SEO</h3>
         
         <div className="space-y-4">
           <div>
@@ -477,7 +477,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 bg-[#193660] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+          className="px-6 py-3 bg-[#02445b] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
         >
           {isLoading ? 'Saving...' : isEdit ? 'Update Product' : 'Create Product'}
         </button>

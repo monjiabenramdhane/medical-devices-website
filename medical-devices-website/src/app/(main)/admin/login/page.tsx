@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="pl-10 w-full px-3 py-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 w-full px-3 py-3 rounded-lg border border-gray-300 text-[#02445b]  focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="relative">
@@ -64,14 +64,14 @@ export default function AdminLoginPage() {
                 required
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="pl-10 w-full px-3 py-3 rounded-lg border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 w-full px-3 py-3 rounded-lg border border-gray-300 text-[#02445b]  focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 px-4 bg-[#193660] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="w-full py-3 px-4 bg-[#02445b] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin mx-auto" /> : 'Sign in'}
           </button>

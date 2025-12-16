@@ -40,7 +40,7 @@ export function LanguageSwitcher() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         disabled={isPending}
-        className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-[#193660] focus:outline-none transition-opacity ${
+        className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-[#02445b] focus:outline-none transition-opacity ${
           isPending ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
@@ -57,7 +57,7 @@ export function LanguageSwitcher() {
                 onClick={() => handleSelect(language.code as Locale)}
                 className={`flex items-center w-full px-4 py-2 text-sm text-left ${
                   locale === language.code
-                    ? 'bg-gray-100 text-[#193660] font-semibold'
+                    ? 'bg-gray-100 text-[#02445b] font-semibold'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
                 role="menuitem"

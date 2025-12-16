@@ -32,7 +32,7 @@ model HomeSection {
   sectionKey                String                      @unique
   title                     String
   subtitle                  String?
-  content                   String
+  content                   String?
   imageUrl                  String?
   imageAlt                  String?
   ctaText                   String?
@@ -42,6 +42,8 @@ model HomeSection {
   createdAt                 DateTime                    @default(now())
   updatedAt                 DateTime                    @updatedAt
   home_section_translations home_section_translations[]
+  products                  Product[]                   @relation("HomeSectionProducts")
+  brands                    Brand[]                     @relation("HomeSectionBrands")
 
   @@index([sectionKey])
   @@index([order])
@@ -65,6 +67,7 @@ model Brand {
   translations    BrandTranslation[]
   equipmentTypes  EquipmentType[]
   products        Product[]
+  homeSections    HomeSection[]      @relation("HomeSectionBrands")
 
   @@index([slug])
   @@index([isActive])
@@ -163,6 +166,7 @@ model Product {
   equipmentType    EquipmentType?         @relation(fields: [equipmentTypeId], references: [id])
   series           Series?                @relation(fields: [seriesId], references: [id])
   subcategory      Subcategory?           @relation(fields: [subcategoryId], references: [id])
+  homeSections     HomeSection[]          @relation("HomeSectionProducts")
 
   @@unique([brandId, slug])
   @@index([brandId])
@@ -315,7 +319,7 @@ model BrandTranslation {
 }
 
 model hero_slide_translations {
-  id          String    @id
+  id          String    @id @default(cuid())
   heroSlideId String
   locale      String
   title       String
@@ -323,7 +327,7 @@ model hero_slide_translations {
   description String?
   ctaText     String?
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime  @updatedAt
   hero_slides HeroSlide @relation(fields: [heroSlideId], references: [id], onDelete: Cascade)
 
   @@unique([heroSlideId, locale])
@@ -331,7 +335,7 @@ model hero_slide_translations {
 }
 
 model home_section_translations {
-  id            String      @id
+  id            String      @id @default(cuid())
   homeSectionId String
   locale        String
   title         String
@@ -339,7 +343,7 @@ model home_section_translations {
   content       String
   ctaText       String?
   createdAt     DateTime    @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime    @updatedAt
   imageUrl      String?
   imageAlt      String?
   home_sections HomeSection @relation(fields: [homeSectionId], references: [id], onDelete: Cascade)

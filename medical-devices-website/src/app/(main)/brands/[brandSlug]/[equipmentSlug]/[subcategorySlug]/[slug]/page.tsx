@@ -187,7 +187,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                 </Link>
               </li>
               <ChevronRight className="h-4 w-4 text-gray-400" />
-              <li className="text-gray-900 font-medium" aria-current="page">
+              <li className="text-[#02445b]  font-medium" aria-current="page">
                 {series.name}
               </li>
             </ol>
@@ -199,14 +199,14 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
               <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
                   {series.name}
                 </h1>
                 <p className="text-lg text-gray-600 mb-6">
                   {subcategory.name} •{' '}
                   <Link
                     href={`/brands/${brandSlug}`}
-                    className="text-[#193660] hover:underline"
+                    className="text-[#02445b] hover:underline"
                   >
                     {brand.name}
                   </Link>
@@ -239,7 +239,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
         {/* Products Grid */}
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
+            <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
               Products in {series.name}
             </h2>
 
@@ -269,7 +269,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                       <div className="p-6">
                         <div className="flex items-center justify-between mb-2">
                           {product.gamme && (
-                            <span className="inline-block px-3 py-1 text-xs font-semibold text-[#193660] bg-blue-100 rounded-full">
+                            <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
                               {product.gamme}
                             </span>
                           )}
@@ -279,7 +279,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                             </span>
                           )}
                         </div>
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
+                        <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
                           {product.name}
                         </h3>
                         {product.shortDescription && (
@@ -287,7 +287,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                             {product.shortDescription}
                           </p>
                         )}
-                        <div className="flex items-center text-[#193660] font-medium group-hover:underline">
+                        <div className="flex items-center text-[#02445b] font-medium group-hover:underline">
                           View Details
                           <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -366,7 +366,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
               </>
             )}
             <ChevronRight className="h-4 w-4 text-gray-400" />
-            <li className="text-gray-900 font-medium" aria-current="page">
+            <li className="text-[#02445b]  font-medium" aria-current="page">
               {product.name}
             </li>
           </ol>
@@ -407,11 +407,11 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
             {/* Product Info */}
             <div>
               {product.gamme && (
-                <span className="inline-block px-3 py-1 text-sm font-semibold text-[#193660] bg-blue-100 rounded-full mb-4">
+                <span className="inline-block px-3 py-1 text-sm font-semibold text-[#02445b] bg-blue-100 rounded-full mb-4">
                   {product.gamme} Range
                 </span>
               )}
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
                 {product.name}
               </h1>
               {product.brand && (
@@ -419,7 +419,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                   by{' '}
                   <Link
                     href={`/brands/${brandSlug}`}
-                    className="text-[#193660] hover:underline"
+                    className="text-[#02445b] hover:underline"
                   >
                     {product.brand.name}
                   </Link>
@@ -440,7 +440,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
               <div className="flex flex-wrap gap-4 mb-8">
                 <a
                   href="#contact"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
                 >
                   {t('ui.requestQuote', 'Request Quote')}
                 </a>
@@ -472,7 +472,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                 }`}
               >
                 <div className={index % 2 === 1 ? 'lg:col-start-2' : ''}>
-                  <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                  <h2 className="text-3xl font-bold text-[#02445b]  mb-4">
                     {section.title}
                   </h2>
                   <div
@@ -503,7 +503,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
       {product.specifications && product.specifications.length > 0 && (
         <section id="specifications" className="py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
+            <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
               Technical Specifications
             </h2>
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -513,7 +513,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                     key={spec.id}
                     className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6"
                   >
-                    <dt className="text-sm font-medium text-gray-900">
+                    <dt className="text-sm font-medium text-[#02445b] ">
                       {spec.name}
                     </dt>
                     <dd className="mt-1 text-sm text-gray-700 sm:col-span-2 sm:mt-0">

@@ -179,7 +179,7 @@ export function HeroSlideForm({ initialData, isEdit = false }: HeroSlideFormProp
             id="isActive"
             checked={formData.isActive}
             onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-            className="h-4 w-4 text-[#193660] focus:ring-blue-500 border-gray-300 rounded"
+            className="h-4 w-4 text-[#02445b] focus:ring-blue-500 border-gray-300 rounded"
           />
           <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
             Active
@@ -191,7 +191,7 @@ export function HeroSlideForm({ initialData, isEdit = false }: HeroSlideFormProp
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-2 bg-[#193660] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-2 bg-[#02445b] text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isLoading ? 'Saving...' : isEdit ? 'Update' : 'Create'}
         </button>

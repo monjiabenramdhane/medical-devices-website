@@ -13,10 +13,10 @@ export default async function HomeSectionsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Home Sections</h1>
+        <h1 className="text-3xl font-bold text-[#02445b] ">Home Sections</h1>
         <Link
           href="/admin/home-sections/new"
-          className="inline-flex items-center px-4 py-2 bg-[#193660] text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-[#02445b] text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-5 w-5 mr-2" />
           Add Section
@@ -28,7 +28,7 @@ export default async function HomeSectionsPage() {
           <p className="text-gray-500 mb-4">No home sections yet</p>
           <Link
             href="/admin/home-sections/new"
-            className="inline-flex items-center px-4 py-2 bg-[#193660] text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-[#02445b] text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Create your first home section
           </Link>
@@ -59,10 +59,10 @@ export default async function HomeSectionsPage() {
               {sections.map((section) => (
                 <tr key={section.id}>
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{section.sectionKey}</div>
+                    <div className="text-sm font-medium text-[#02445b] ">{section.sectionKey}</div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="text-sm font-medium text-gray-900">{section.title}</div>
+                    <div className="text-sm font-medium text-[#02445b] ">{section.title}</div>
                     {section.subtitle && (
                       <div className="text-sm text-gray-500">{section.subtitle}</div>
                     )}
@@ -84,7 +84,7 @@ export default async function HomeSectionsPage() {
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
                       href={`/admin/home-sections/${section.id}`}
-                      className="text-[#193660] hover:text-blue-900"
+                      className="text-[#02445b] hover:text-blue-900"
                     >
                       <Edit className="inline h-4 w-4" />
                     </Link>

@@ -79,7 +79,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
               All Products
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -98,19 +98,19 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               <div className="bg-white rounded-lg shadow p-6 sticky top-4">
                 <div className="flex items-center mb-6">
                   <Filter className="h-5 w-5 text-gray-400 mr-2" />
-                  <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+                  <h2 className="text-lg font-semibold text-[#02445b] ">Filters</h2>
                 </div>
 
                 {/* Brand Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Brand</h3>
+                  <h3 className="text-sm font-semibold text-[#02445b]  mb-3">Brand</h3>
                   <div className="space-y-2">
                     <Link
                       href="/products"
                       className={`block text-sm ${
                         !selectedBrand
-                          ? 'text-[#193660] font-semibold'
-                          : 'text-gray-600 hover:text-gray-900'
+                          ? 'text-[#02445b] font-semibold'
+                          : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
                       All Brands
@@ -121,8 +121,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         href={`/products?brand=${brand.slug}`}
                         className={`block text-sm ${
                           selectedBrand === brand.slug
-                            ? 'text-[#193660] font-semibold'
-                            : 'text-gray-600 hover:text-gray-900'
+                            ? 'text-[#02445b] font-semibold'
+                            : 'text-gray-600 hover:text-[#02445b] '
                         }`}
                       >
                         {brand.name}
@@ -133,14 +133,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
                 {/* Gamme Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Range</h3>
+                  <h3 className="text-sm font-semibold text-[#02445b]  mb-3">Range</h3>
                   <div className="space-y-2">
                     <Link
                       href="/products"
                       className={`block text-sm ${
                         !gamme
-                          ? 'text-[#193660] font-semibold'
-                          : 'text-gray-600 hover:text-gray-900'
+                          ? 'text-[#02445b] font-semibold'
+                          : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
                       All Ranges
@@ -149,8 +149,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       href="/products?gamme=high"
                       className={`block text-sm ${
                         gamme === 'high'
-                          ? 'text-[#193660] font-semibold'
-                          : 'text-gray-600 hover:text-gray-900'
+                          ? 'text-[#02445b] font-semibold'
+                          : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
                       High Range
@@ -159,8 +159,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       href="/products?gamme=medium"
                       className={`block text-sm ${
                         gamme === 'medium'
-                          ? 'text-[#193660] font-semibold'
-                          : 'text-gray-600 hover:text-gray-900'
+                          ? 'text-[#02445b] font-semibold'
+                          : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
                       Medium Range
@@ -169,8 +169,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                       href="/products?gamme=low"
                       className={`block text-sm ${
                         gamme === 'low'
-                          ? 'text-[#193660] font-semibold'
-                          : 'text-gray-600 hover:text-gray-900'
+                          ? 'text-[#02445b] font-semibold'
+                          : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
                       Low Range
@@ -180,14 +180,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
                 {/* Specialty Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Specialty</h3>
+                  <h3 className="text-sm font-semibold text-[#02445b]  mb-3">Specialty</h3>
                   <div className="space-y-2">
                     <Link
                       href="/products"
                       className={`block text-sm ${
                         !specialty
-                          ? 'text-[#193660] font-semibold'
-                          : 'text-gray-600 hover:text-gray-900'
+                          ? 'text-[#02445b] font-semibold'
+                          : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
                       All Specialties
@@ -199,8 +199,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           href={`/products?specialty=${spec.toLowerCase()}`}
                           className={`block text-sm ${
                             specialty === spec.toLowerCase()
-                              ? 'text-[#193660] font-semibold'
-                              : 'text-gray-600 hover:text-gray-900'
+                              ? 'text-[#02445b] font-semibold'
+                              : 'text-gray-600 hover:text-[#02445b] '
                           }`}
                         >
                           {spec}
@@ -226,7 +226,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               {products.length === 0 ? (
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
                   <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-semibold text-[#02445b]  mb-2">
                     No products found
                   </h3>
                   <p className="text-gray-600 mb-4">
@@ -276,7 +276,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           {/* Badges */}
                           <div className="flex items-center gap-2 mb-2">
                             {product.gamme && (
-                              <span className="inline-block px-2 py-1 text-xs font-semibold text-[#193660] bg-blue-100 rounded">
+                              <span className="inline-block px-2 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded">
                                 {product.gamme}
                               </span>
                             )}
@@ -288,7 +288,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           </div>
 
                           {/* Title */}
-                          <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
+                          <h3 className="text-lg font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
                             {product.name}
                           </h3>
 
@@ -307,7 +307,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           )}
 
                           {/* CTA */}
-                          <div className="mt-4 flex items-center text-[#193660] font-medium group-hover:underline">
+                          <div className="mt-4 flex items-center text-[#02445b] font-medium group-hover:underline">
                             View Details
                             <svg
                               className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform"

@@ -18,7 +18,7 @@ export function HeaderClient({ translations }: HeaderClientProps) {
   const t = (key: string, fallback: string) => translations[key] || fallback;
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
+    <header className="bg-[#ebf6f2] shadow-sm sticky top-0 z-50">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
@@ -39,20 +39,20 @@ export function HeaderClient({ translations }: HeaderClientProps) {
           <div className="hidden lg:flex lg:items-center lg:space-x-8">
             <Link
               href="/brands"
-              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
+              className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
             >
-              Brands
+              {t('nav.brands', 'Brands')}
             </Link>
             <Link
               href="/products"
-              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
+              className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
             >
               {t('nav.products', 'Products')}
             </Link>
             
             <div className="relative group">
-              <button className="flex items-center text-base font-medium text-gray-700 hover:text-[#193660] transition-colors">
-                Services
+              <button className="flex items-center text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors">
+                {t('nav.services', 'Services')}
                 <ChevronDown className="ml-1 h-4 w-4" />
               </button>
               {/* Dropdown menu would go here */}
@@ -60,14 +60,14 @@ export function HeaderClient({ translations }: HeaderClientProps) {
 
             <Link
               href="/about"
-              className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
+              className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
             >
               {t('nav.about', 'About Us')}
             </Link>
 
             <Link
               href="/contact"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-3xl text-white bg-[#193660] hover:bg-[#193660]/90 transition-colors"
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-3xl text-white bg-[#02445b] hover:bg-[#02445b]/90 transition-colors"
             >
               {t('nav.contact', 'Contact')}
             </Link>
@@ -75,7 +75,7 @@ export function HeaderClient({ translations }: HeaderClientProps) {
             {isAdmin && (
               <Link
                 href="/admin"
-                className="inline-flex items-center px-2 py-2 border rounded-full border-transparent text-sm font-medium text-white bg-[#193660] hover:bg-[#193660]/90 transition-colors"
+                className="inline-flex items-center px-2 py-2 border rounded-full border-transparent text-sm font-medium text-white bg-[#02445b] hover:bg-[#02445b]/90 transition-colors"
               >
                 <UserIcon className="h-5 w-5"/>
                 <span className="sr-only">{t('nav.admin', 'Admin Dashboard')}</span>
@@ -90,7 +90,7 @@ export function HeaderClient({ translations }: HeaderClientProps) {
             <LanguageSwitcher />
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-[#193660] hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-[#02445b] hover:bg-gray-100 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-expanded={mobileMenuOpen}
               aria-label="Toggle navigation menu"
@@ -110,28 +110,28 @@ export function HeaderClient({ translations }: HeaderClientProps) {
             <div className="flex flex-col space-y-4">
               <Link
                 href="/products"
-                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.products', 'Products')}
               </Link>
               <Link
                 href="/services"
-                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Services
               </Link>
               <Link
                 href="/research"
-                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Research
               </Link>
               <Link
                 href="/about"
-                className="text-base font-medium text-gray-700 hover:text-[#193660] transition-colors"
+                className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.about', 'About Us')}
@@ -139,7 +139,7 @@ export function HeaderClient({ translations }: HeaderClientProps) {
               {isAdmin && (
                 <Link
                   href="/admin"
-                  className="text-base font-medium text-[#193660] hover:text-blue-700 transition-colors"
+                  className="text-base font-medium text-[#02445b] hover:text-blue-700 transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {t('nav.admin', 'Admin Dashboard')}
@@ -147,7 +147,7 @@ export function HeaderClient({ translations }: HeaderClientProps) {
               )}
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.contact', 'Contact')}

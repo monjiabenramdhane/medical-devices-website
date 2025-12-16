@@ -91,7 +91,7 @@ export default async function EquipmentTypePage({ params }: EquipmentTypePagePro
               </Link>
             </li>
             <ChevronRight className="h-4 w-4 text-gray-400" />
-            <li className="text-gray-900 font-medium" aria-current="page">
+            <li className="text-[#02445b]  font-medium" aria-current="page">
               {equipmentType.name}
             </li>
           </ol>
@@ -110,14 +110,14 @@ export default async function EquipmentTypePage({ params }: EquipmentTypePagePro
                   className="h-20 w-20 mb-6"
                 />
               )}
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
                 {equipmentType.name}
               </h1>
               <p className="text-lg text-gray-600 mb-6">
                 by{' '}
                 <Link
                   href={`/brands/${equipmentType.brand.slug}`}
-                  className="text-[#193660] hover:underline font-semibold"
+                  className="text-[#02445b] hover:underline font-semibold"
                 >
                   {equipmentType.brand.name}
                 </Link>
@@ -142,7 +142,7 @@ export default async function EquipmentTypePage({ params }: EquipmentTypePagePro
       {/* Subcategories Grid */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
+          <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
             Subcategories & Specialties
           </h2>
 
@@ -160,7 +160,7 @@ export default async function EquipmentTypePage({ params }: EquipmentTypePagePro
                   className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden border border-gray-200 hover:border-blue-500"
                 >
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
+                    <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
                       {subcategory.name}
                     </h3>
                     {subcategory.description && (
@@ -181,7 +181,7 @@ export default async function EquipmentTypePage({ params }: EquipmentTypePagePro
                           </span>
                         )}
                       </div>
-                      <ChevronRight className="h-5 w-5 text-[#193660] group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="h-5 w-5 text-[#02445b] group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Link>

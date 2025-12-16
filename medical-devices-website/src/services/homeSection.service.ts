@@ -20,19 +20,77 @@ export const HomeSectionService = {
     });
   },
 
-  getLocalizedByKey: async (key: string, locale: string = DEFAULT_LOCALE): Promise<HomeSection | null> => {
+  getLocalizedByKey: async (key: string, locale: string = DEFAULT_LOCALE) => {
     const section = await prisma.homeSection.findUnique({
       where: { sectionKey: key, isActive: true },
       include: {
         home_section_translations: {
           where: { locale },
         },
+        products: {
+          where: { isActive: true },
+          include: {
+            brand: true,
+            equipmentType: true,
+            subcategory: {
+              include: {
+                equipmentType: true,
+              },
+            },
+            series: true,
+            // Fetch product translations
+            translations: {
+              where: { locale },
+            }
+          },
+          orderBy: { order: 'asc' },
+        },
+        brands: {
+          where: { isActive: true },
+          include: {
+            // Fetch brand translations
+            translations: {
+              where: { locale },
+            }
+          },
+          orderBy: { order: 'asc' },
+        }
       },
     });
 
     if (!section) return null;
 
     const translation = section.home_section_translations[0];
+
+    // Map localized fields for products
+    const localizedProducts = section.products.map(product => {
+      const prodTranslation = product.translations[0];
+      return {
+        ...product,
+        name: prodTranslation?.name || product.name,
+        shortDescription: prodTranslation?.shortDescription || product.shortDescription,
+        fullDescription: prodTranslation?.fullDescription || product.fullDescription,
+        metaTitle: prodTranslation?.metaTitle || product.metaTitle,
+        metaDescription: prodTranslation?.metaDescription || product.metaDescription,
+        heroImageAlt: prodTranslation?.heroImageAlt || product.heroImageAlt,
+        // Cleanup translations array nicely, though mostly internal
+        translations: undefined
+      };
+    });
+
+    // Map localized fields for brands
+    const localizedBrands = section.brands.map(brand => {
+      const brandTranslation = brand.translations[0];
+      return {
+        ...brand,
+        name: brandTranslation?.name || brand.name, // Usually brand name shouldn't change, but schema allows it
+        description: brandTranslation?.description || brand.description,
+        metaTitle: brandTranslation?.metaTitle || brand.metaTitle,
+        metaDescription: brandTranslation?.metaDescription || brand.metaDescription,
+        translations: undefined
+      };
+    });
+
     return {
       ...section,
       title: translation?.title || section.title,
@@ -41,7 +99,8 @@ export const HomeSectionService = {
       ctaText: translation?.ctaText ?? section.ctaText,
       imageUrl: translation?.imageUrl ?? section.imageUrl,
       imageAlt: translation?.imageAlt ?? section.imageAlt,
+      products: localizedProducts,
+      brands: localizedBrands,
     };
-    
   },
 };

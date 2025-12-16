@@ -18,12 +18,12 @@ export default function PlaceholderPage({ title, backUrl }: PlaceholderPageProps
       <div className="mb-6">
         <Link 
           href={backUrl}
-          className="inline-flex items-center text-gray-500 hover:text-gray-900 transition-colors mb-4"
+          className="inline-flex items-center text-gray-500 hover:text-[#02445b]  transition-colors mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to list
         </Link>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-[#02445b] ">
           {isNew ? `Create ${title}` : `Edit ${title}`}
         </h1>
       </div>
@@ -32,7 +32,7 @@ export default function PlaceholderPage({ title, backUrl }: PlaceholderPageProps
         <div className="mx-auto h-12 w-12 text-gray-400 bg-gray-50 rounded-full flex items-center justify-center mb-4">
           <span className="text-xl font-bold">🛠️</span>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Coming Soon</h3>
+        <h3 className="text-lg font-medium text-[#02445b]  mb-2">Coming Soon</h3>
         <p className="text-gray-500 max-w-sm mx-auto">
           The form to {isNew ? 'create a new' : 'edit this'} {title.toLowerCase()} is currently under development.
         </p>

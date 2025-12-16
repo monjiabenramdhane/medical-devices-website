@@ -12,7 +12,7 @@ export default function ServerErrorPage() {
             <AlertTriangle className="h-12 w-12 text-red-600" />
           </div>
         </div>
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+        <h1 className="text-4xl font-extrabold text-[#02445b]  mb-4">
           Something went wrong
         </h1>
         <p className="text-lg text-gray-600 mb-8">

@@ -39,7 +39,7 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-[#02445b] ">Dashboard</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Total Products</p>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{stats.productsCount}</p>
+            <p className="text-3xl font-bold text-[#02445b]  mt-2">{stats.productsCount}</p>
           </div>
           <div className="p-3 bg-blue-50 rounded-lg">
             <Package className="h-6 w-6 text-[#193660]" />
@@ -58,7 +58,7 @@ export default async function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Total Brands</p>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{stats.brandsCount}</p>
+            <p className="text-3xl font-bold text-[#02445b]  mt-2">{stats.brandsCount}</p>
           </div>
           <div className="p-3 bg-purple-50 rounded-lg">
             <Tag className="h-6 w-6 text-purple-600" />
@@ -69,7 +69,7 @@ export default async function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Home Sections</p>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{stats.homeSectionsCount}</p>
+            <p className="text-3xl font-bold text-[#02445b]  mt-2">{stats.homeSectionsCount}</p>
           </div>
           <div className="p-3 bg-indigo-50 rounded-lg">
             <FileText className="h-6 w-6 text-indigo-600" />
@@ -80,7 +80,7 @@ export default async function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-500">Hero Slides</p>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{stats.heroSlidesCount}</p>
+            <p className="text-3xl font-bold text-[#02445b]  mt-2">{stats.heroSlidesCount}</p>
           </div>
           <div className="p-3 bg-pink-50 rounded-lg">
             <ImageIcon className="h-6 w-6 text-pink-600" />
@@ -90,19 +90,19 @@ export default async function AdminDashboard() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100">
-          <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+          <h2 className="text-lg font-semibold text-[#02445b] ">Quick Actions</h2>
         </div>
         <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
            <Link href="/admin/products/new" className="block p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all group">
-             <h3 className="font-medium text-gray-900 group-hover:text-[#193660]">Add New Product</h3>
+             <h3 className="font-medium text-[#02445b]  group-hover:text-[#193660]">Add New Product</h3>
              <p className="text-sm text-gray-500 mt-1">Create a new product listing</p>
            </Link>
            <Link href="/admin/brands/new" className="block p-4 border border-gray-200 rounded-lg hover:border-purple-500 hover:shadow-md transition-all group">
-             <h3 className="font-medium text-gray-900 group-hover:text-purple-600">Add New Brand</h3>
+             <h3 className="font-medium text-[#02445b]  group-hover:text-purple-600">Add New Brand</h3>
              <p className="text-sm text-gray-500 mt-1">Register a new manufacturer</p>
            </Link>
            <Link href="/admin/hero-slides/new" className="block p-4 border border-gray-200 rounded-lg hover:border-pink-500 hover:shadow-md transition-all group">
-             <h3 className="font-medium text-gray-900 group-hover:text-pink-600">Add Hero Slide</h3>
+             <h3 className="font-medium text-[#02445b]  group-hover:text-pink-600">Add Hero Slide</h3>
              <p className="text-sm text-gray-500 mt-1">Update the homepage carousel</p>
            </Link>
         </div>

@@ -18,7 +18,7 @@ export default async function BrandsPage() {
       <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
               Our Brands
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -45,7 +45,7 @@ export default async function BrandsPage() {
                       className="max-h-full max-w-full object-contain"
                     />
                   </div>
-                  <h2 className="text-2xl font-semibold text-gray-900 mb-3 text-center group-hover:text-[#193660] transition-colors">
+                  <h2 className="text-2xl font-semibold text-[#02445b]  mb-3 text-center group-hover:text-[#02445b] transition-colors">
                     {brand.name}
                   </h2>
                   {brand.description && (
@@ -55,7 +55,7 @@ export default async function BrandsPage() {
                   )}
                   {brand.equipmentTypes && brand.equipmentTypes.length > 0 && (
                     <div className="text-center">
-                      <span className="inline-block px-3 py-1 text-xs font-semibold text-[#193660] bg-blue-100 rounded-full">
+                      <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
                         {brand.equipmentTypes.length} equipment {brand.equipmentTypes.length === 1 ? 'type' : 'types'}
                       </span>
                     </div>

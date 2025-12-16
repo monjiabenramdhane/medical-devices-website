@@ -43,7 +43,7 @@ export function FacesBehindDevice({ data }: FacesBehindDeviceProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl mb-6">
+            <h2 className="text-3xl font-bold text-[#02445b]  sm:text-4xl mb-6">
               {content.title}
             </h2>
             <div 
@@ -53,7 +53,7 @@ export function FacesBehindDevice({ data }: FacesBehindDeviceProps) {
             {content.ctaLink && content.ctaText && (
               <Link
                 href={content.ctaLink}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#193660] hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
               >
                 {content.ctaText}
               </Link>

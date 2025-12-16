@@ -54,7 +54,7 @@ export default async function BrandPage(props: BrandPageProps) {
               </Link>
             </li>
             <ChevronRight className="h-4 w-4 text-gray-400" />
-            <li className="text-gray-900 font-medium" aria-current="page">
+            <li className="text-[#02445b]  font-medium" aria-current="page">
               {brand.name}
             </li>
           </ol>
@@ -70,7 +70,7 @@ export default async function BrandPage(props: BrandPageProps) {
               alt={brand.logoAlt}
               className="h-24 w-auto mx-auto mb-6"
             />
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
               {brand.name}
             </h1>
             {brand.description && (
@@ -83,7 +83,7 @@ export default async function BrandPage(props: BrandPageProps) {
                 href={brand.websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center mt-6 px-6 py-3 border border-[#193660] text-base font-medium rounded-md text-[#193660] bg-white hover:bg-blue-50 transition-colors"
+                className="inline-flex items-center mt-6 px-6 py-3 border border-[#193660] text-base font-medium rounded-md text-[#02445b] bg-white hover:bg-blue-50 transition-colors"
               >
                 Visit Official Website
                 <svg
@@ -108,7 +108,7 @@ export default async function BrandPage(props: BrandPageProps) {
       {/* Equipment Types Grid */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8">
+          <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
             Equipment Categories
           </h2>
 
@@ -135,7 +135,7 @@ export default async function BrandPage(props: BrandPageProps) {
                         />
                       </div>
                     )}
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-[#193660] transition-colors">
+                    <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
                       {equipmentType.name}
                     </h3>
                     {equipmentType.description && (
@@ -149,7 +149,7 @@ export default async function BrandPage(props: BrandPageProps) {
                         {equipmentType.subcategories.length} subcategories
                       </div>
                     )}
-                    <div className="mt-4 flex items-center text-[#193660] font-medium group-hover:underline">
+                    <div className="mt-4 flex items-center text-[#02445b] font-medium group-hover:underline">
                       Explore
                       <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </div>

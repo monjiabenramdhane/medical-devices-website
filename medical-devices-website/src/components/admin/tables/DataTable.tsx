@@ -44,7 +44,7 @@ export default function DataTable<T>({ columns, data, keyExtractor }: DataTableP
                 {columns.map((col, index) => (
                   <td 
                     key={index} 
-                    className={`px-6 py-4 text-gray-900 ${col.className || ''}`}
+                    className={`px-6 py-4 text-[#02445b]  ${col.className || ''}`}
                   >
                     {col.cell ? col.cell(item) : (col.accessorKey ? String(item[col.accessorKey]) : '')}
                   </td>

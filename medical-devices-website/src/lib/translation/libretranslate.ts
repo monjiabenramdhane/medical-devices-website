@@ -149,6 +149,72 @@ class LibreTranslateService {
         };
     }
 
+    async processHomeSectionContent(data: Record<string, any>) {
+        const TRANSLATABLE_HOME_FIELDS = [
+            'title',
+            'subtitle',
+            'content',
+            'ctaText',
+            'imageUrl',
+            'imageAlt'
+        ] as const;
+
+        // 1. Identify text to trigger detection
+        const detectionText = data.content || data.subtitle || data.title || '';
+
+        // Default to DEFAULT_LOCALE if no text
+        let sourceLang: Locale = DEFAULT_LOCALE;
+        if (detectionText) {
+            sourceLang = await this.detectLanguage(detectionText);
+        }
+
+        const results: Record<string, Record<string, any>> = {};
+
+        // Initialize results for all supported locales
+        for (const locale of SUPPORTED_LOCALES) {
+            results[locale] = {};
+        }
+
+        // 2. Fill the source language data with current input
+        TRANSLATABLE_HOME_FIELDS.forEach(field => {
+            if (data[field] !== undefined) {
+                results[sourceLang][field] = data[field];
+            }
+        });
+
+        // 3. Translate to other locales
+        for (const targetLang of SUPPORTED_LOCALES) {
+            if (targetLang === sourceLang) continue;
+
+            for (const field of TRANSLATABLE_HOME_FIELDS) {
+                const sourceText = data[field];
+                // URLs usually don't need translation unless specific logic, but copying is good.
+                // Text fields get translated.
+                if (sourceText) {
+                    if (field === 'imageUrl' || field === 'title' && !data.title) {
+                        // Skip if needed logic
+                    }
+
+                    if (field === 'imageUrl') {
+                        results[targetLang][field] = sourceText;
+                    } else {
+                        const translated = await this.translate({
+                            text: sourceText,
+                            sourceLang,
+                            targetLang,
+                        });
+                        results[targetLang][field] = translated;
+                    }
+                }
+            }
+        }
+
+        return {
+            sourceLang,
+            localizedData: results
+        };
+    }
+
     async autoTranslate(
         enText: string | null | undefined,
         frText: string | null | undefined

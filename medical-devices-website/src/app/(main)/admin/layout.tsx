@@ -123,7 +123,7 @@ export default async function AdminLayout({
                href="/"
                target="_blank"
                rel="noopener noreferrer"
-               className="flex items-center w-full px-4 py-2 mb-2 rounded-lg bg-[#193660] hover:bg-blue-700 transition-colors text-sm font-medium"
+               className="flex items-center w-full px-4 py-2 mb-2 rounded-lg bg-[#02445b] hover:bg-blue-700 transition-colors text-sm font-medium"
              >
                <ExternalLink className="h-4 w-4 mr-2" />
                View Website
@@ -146,7 +146,7 @@ export default async function AdminLayout({
         {/* Mobile Header */}
         <header className="lg:hidden bg-white border-b border-gray-200">
           <div className="flex items-center justify-between px-4 py-3">
-            <h1 className="text-lg font-bold text-gray-900">Admin Panel</h1>
+            <h1 className="text-lg font-bold text-[#02445b] ">Admin Panel</h1>
             <AdminNavigation userEmail={session.user?.email || ''} />
           </div>
         </header>

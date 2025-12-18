@@ -317,7 +317,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               <option value="">Select Gamme</option>
               <option value="HIGH">High Range</option>
               <option value="MEDIUM">Medium Range</option>
-              <option value="LOW">Low Range</option>
+              <option value="LOW">Entry level</option>
             </select>
           </div>
 

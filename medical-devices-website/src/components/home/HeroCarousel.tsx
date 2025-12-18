@@ -58,8 +58,8 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
       aria-roledescription="carousel"
     >
       <div className="relative h-[500px] lg:h-[600px]">
-        <div className="absolute inset-0 flex items-center">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
+        <div className="flex items-center">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-4 lg:px-8 lg:pt-0 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
               
               {/* TEXT + CONTROLS */}

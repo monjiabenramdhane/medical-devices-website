@@ -53,7 +53,7 @@ export function FacesBehindDevice({ data }: FacesBehindDeviceProps) {
             {content.ctaLink && content.ctaText && (
               <Link
                 href={content.ctaLink}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
               >
                 {content.ctaText}
               </Link>

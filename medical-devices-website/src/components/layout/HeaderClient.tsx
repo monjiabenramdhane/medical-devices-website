@@ -38,6 +38,12 @@ export function HeaderClient({ translations }: HeaderClientProps) {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:items-center lg:space-x-8">
             <Link
+              href="/"
+              className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
+            >
+              {t('nav.home', 'Home')}
+            </Link>
+            <Link
               href="/brands"
               className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
             >

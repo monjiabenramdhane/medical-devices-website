@@ -7,6 +7,8 @@ interface FeaturedProductsProps {
   description?: string;
   viewAllText?: string;
   learnMoreText?: string;
+  uiTranslations?: Record<string, string>; // added to support translations
+  specialtyTranslations?: Record<string, string>; // added to support translations
 }
 
 export function FeaturedProducts({ 
@@ -14,11 +16,23 @@ export function FeaturedProducts({
   title = 'Featured Products',
   description = 'Discover our most innovative medical devices',
   viewAllText = 'View All Products',
-  learnMoreText = 'Learn More'
+  learnMoreText = 'Learn More',
+  uiTranslations = {},
+  specialtyTranslations = {}
 }: FeaturedProductsProps) {
   if (!products || products.length === 0) {
     return null;
   }
+
+  const getGammeLabel = (gamme: string | undefined) => {
+    if (!gamme) return '';
+    return uiTranslations[`ui.gamme.${gamme.toLowerCase()}`] || gamme;
+  };
+
+  const getSpecialtyLabel = (specialty: string | undefined) => {
+    if (!specialty) return '';
+    return specialtyTranslations[`specialty.${specialty.toLowerCase()}`] || specialty;
+  };
 
   return (
     <section className="py-16 bg-white" aria-labelledby="featured-heading">
@@ -26,7 +40,7 @@ export function FeaturedProducts({
         <div className="text-center mb-12">
           <h2
             id="featured-heading"
-            className="text-3xl font-bold text-[#02445b]  sm:text-4xl"
+            className="text-3xl font-bold text-[#02445b] sm:text-4xl"
           >
             {title}
           </h2>
@@ -51,16 +65,21 @@ export function FeaturedProducts({
                   <img
                     src={product.heroImageUrl || '/images/placeholder-product.jpg'}
                     alt={product.heroImageAlt || product.name}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-[400px] object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-6">
                   {product.gamme && (
-                    <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full mb-2">
-                      {product.gamme}
+                    <span className="inline-block px-3 py-1 text-xs mr-2 font-semibold text-[#02445b] bg-blue-100 rounded-full mb-2">
+                      {getGammeLabel(product.gamme)}
                     </span>
                   )}
-                  <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
+                  {product.specialty && (
+                    <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-[#bddbd1]/80 rounded-full mb-2">
+                      {getSpecialtyLabel(product.specialty)}
+                    </span>
+                  )}
+                  <h3 className="text-xl font-semibold text-[#02445b] mb-2 group-hover:text-[#02445b] transition-colors">
                     {product.name}
                   </h3>
                   {product.shortDescription && (
@@ -93,7 +112,7 @@ export function FeaturedProducts({
         <div className="text-center mt-12">
           <Link
             href="/products"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
           >
             {viewAllText}
           </Link>

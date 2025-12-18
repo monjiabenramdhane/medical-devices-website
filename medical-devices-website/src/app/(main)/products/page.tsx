@@ -3,11 +3,21 @@ import { prisma } from '@/lib/prisma';
 import { generateMetadata as genMeta } from '@/lib/utils';
 import { Package, Filter } from 'lucide-react';
 import type { Metadata } from 'next';
+import { getLocale } from '@/lib/i18n/locale-resolver';
+import { getTranslationsByCategory, getTranslation } from '@/lib/i18n/translation-service';
+import { getLocalizedProducts } from '@/lib/i18n/localized-product-service';
+import { Gamme, Specialty } from '@prisma/client';
 
-export const metadata: Metadata = genMeta({
-  title: 'All Products - Medical Devices',
-  description: 'Browse our complete catalog of medical devices and equipment',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const title = await getTranslation(locale, 'products.metaTitle', 'All Products - Medical Devices');
+  const description = await getTranslation(locale, 'products.metaDescription', 'Browse our complete catalog of medical devices and equipment');
+  
+  return genMeta({
+    title,
+    description,
+  });
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -22,56 +32,50 @@ interface ProductsPageProps {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const { brand: selectedBrand, gamme, specialty, search } = await searchParams;
-
-  // Build filter conditions
-  const where: any = { isActive: true };
-  
-  if (selectedBrand) {
-    where.brand = { slug: selectedBrand };
-  }
-  
-  if (gamme) {
-    where.gamme = gamme.toUpperCase();
-  }
-  
-  if (specialty) {
-    where.specialty = specialty.toUpperCase();
-  }
-  
-  if (search) {
-    where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { shortDescription: { contains: search, mode: 'insensitive' } },
-    ];
-  }
-
-  // Fetch products with filters
-  const [products, brands, totalCount] = await Promise.all([
-    prisma.product.findMany({
-      where,
-      include: {
-        brand: true,
-        equipmentType: true,
-        subcategory: {
-          include: {
-            equipmentType: true,
-          },
-        },
-        series: true,
-      },
-      orderBy: [
-        { isFeatured: 'desc' },
-        { order: 'asc' },
-      ],
-      take: 50,
+  const locale = await getLocale();
+  const SPECIALTIES = Object.values(Specialty).filter(
+    (s) => s !== Specialty.OTHER
+  );
+  // Fetch translations and data in parallel
+  const [products, brands, uiTranslations, totalCount, specialtyTranslations, productsTranslations] = await Promise.all([
+    getLocalizedProducts(locale, {
+       brandSlug: selectedBrand,
+       gamme: gamme?.toUpperCase() as Gamme,
+       specialty: specialty?.toUpperCase() as Specialty,
+       search,
+       limit: 50,
     }),
     prisma.brand.findMany({
       where: { isActive: true },
       orderBy: { name: 'asc' },
       select: { id: true, name: true, slug: true },
     }),
-    prisma.product.count({ where }),
+    getTranslationsByCategory(locale, 'ui'), 
+    // We still need a raw count for the total if we want it perfect, for now we can rely on products.length or do a raw count query
+    // To match original logic exactly:
+    prisma.product.count({
+        where: {
+            isActive: true,
+            brand: selectedBrand ? { slug: selectedBrand } : undefined,
+            gamme: gamme ? (gamme.toUpperCase() as Gamme) : undefined,
+            specialty: specialty ? (specialty.toUpperCase() as Specialty) : undefined,
+            OR: search ? [
+                { name: { contains: search, mode: 'insensitive' } },
+                { shortDescription: { contains: search, mode: 'insensitive' } },
+            ] : undefined
+        }
+    }),
+    getTranslationsByCategory(locale, 'specialty'),
+    getTranslationsByCategory(locale, 'products'),
   ]);
+
+  const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
+  const tSpec = (key: string, fallback: string) => specialtyTranslations[key] || fallback;
+  const tProduct = (key: string, fallback: string) => productsTranslations[key] || fallback;
+
+  // Helper to get ranges and specialties localization
+  const tGamme = (val: Gamme) => t(`ui.gamme.${val.toLowerCase()}`, val);
+  const tSpecialty = (val: Specialty) => tSpec(`specialty.${val.toLowerCase()}`, val);
 
   return (
     <div className="bg-white">
@@ -79,11 +83,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
-              All Products
+            <h1 className="text-4xl font-bold text-[#02445b] mb-4">
+                {tProduct('products.allProducts', 'All Products')}
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore our complete range of medical devices and equipment
+              {tProduct('products.subtitle', 'Explore our complete range of medical devices and equipment')}
             </p>
           </div>
         </div>
@@ -98,13 +102,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               <div className="bg-white rounded-lg shadow p-6 sticky top-4">
                 <div className="flex items-center mb-6">
                   <Filter className="h-5 w-5 text-gray-400 mr-2" />
-                  <h2 className="text-lg font-semibold text-[#02445b] ">Filters</h2>
+                  <h2 className="text-lg font-semibold text-[#02445b] ">{t('ui.filters', 'Filters')}</h2>
                 </div>
 
                 {/* Brand Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-[#02445b]  mb-3">Brand</h3>
-                  <div className="space-y-2">
+                  <h3 className="text-md font-semibold text-[#466c65] bg-[#ebf6f2] p-2 rounded-lg mb-3">{t('ui.brand', 'Brand')}</h3>
+                  <div className="space-y-2 px-2">
                     <Link
                       href="/products"
                       className={`block text-sm ${
@@ -113,7 +117,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
-                      All Brands
+                      {t('ui.allBrands', 'All Brands')}
                     </Link>
                     {brands.map((brand) => (
                       <Link
@@ -133,8 +137,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
                 {/* Gamme Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-[#02445b]  mb-3">Range</h3>
-                  <div className="space-y-2">
+                  <h3 className="text-md font-semibold text-[#466c65] bg-[#ebf6f2] p-2 rounded-lg mb-3">{t('ui.range', 'Range')}</h3>
+                  <div className="space-y-2 px-2">
                     <Link
                       href="/products"
                       className={`block text-sm ${
@@ -143,7 +147,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
-                      All Ranges
+                      {t('ui.allRanges', 'All Ranges')}
                     </Link>
                     <Link
                       href="/products?gamme=high"
@@ -153,7 +157,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
-                      High Range
+                      {t('ui.gamme.high', 'High Range')}
                     </Link>
                     <Link
                       href="/products?gamme=medium"
@@ -163,7 +167,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
-                      Medium Range
+                      {t('ui.gamme.medium', 'Medium Range')}
                     </Link>
                     <Link
                       href="/products?gamme=low"
@@ -173,15 +177,15 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
-                      Low Range
+                      {t('ui.gamme.low', 'Entry level')}
                     </Link>
                   </div>
                 </div>
 
                 {/* Specialty Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-[#02445b]  mb-3">Specialty</h3>
-                  <div className="space-y-2">
+                  <h3 className="text-md font-semibold text-[#466C65] bg-[#ebf6f2] p-2 rounded-lg mb-3">{t('ui.specialty', 'Specialty')}</h3>
+                  <div className="space-y-2 px-2">
                     <Link
                       href="/products"
                       className={`block text-sm ${
@@ -190,23 +194,25 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           : 'text-gray-600 hover:text-[#02445b] '
                       }`}
                     >
-                      All Specialties
+                      {t('ui.allSpecialties', 'All Specialties')}
                     </Link>
-                    {['Cardiology', 'Generalist', 'Orthopedic', 'Neurology', 'Obstetrics', 'Emergency', 'Pediatric'].map(
-                      (spec) => (
+                     {SPECIALTIES.map((spec) => {
+                      const value = spec.toLowerCase();
+
+                      return (
                         <Link
                           key={spec}
-                          href={`/products?specialty=${spec.toLowerCase()}`}
+                          href={`/products?specialty=${value}`}
                           className={`block text-sm ${
-                            specialty === spec.toLowerCase()
+                            specialty === value
                               ? 'text-[#02445b] font-semibold'
-                              : 'text-gray-600 hover:text-[#02445b] '
+                              : 'text-gray-600 hover:text-[#02445b]'
                           }`}
                         >
-                          {spec}
+                          {tSpecialty(spec)}
                         </Link>
-                      )
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -217,8 +223,8 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
               {/* Results Count */}
               <div className="flex items-center justify-between mb-6">
                 <p className="text-sm text-gray-600">
-                  Showing <span className="font-semibold">{products.length}</span> of{' '}
-                  <span className="font-semibold">{totalCount}</span> products
+                  {t('ui.showing', 'Showing')} <span className="font-semibold">{products.length}</span> {t('ui.of', 'of')}{' '}
+                  <span className="font-semibold">{totalCount}</span> {t('ui.products', 'products')}
                 </p>
               </div>
 
@@ -227,16 +233,16 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 <div className="text-center py-12 bg-gray-50 rounded-lg">
                   <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-[#02445b]  mb-2">
-                    No products found
+                    {t('ui.noProductsFound', 'No products found')}
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Try adjusting your filters or search criteria
+                    {t('ui.adjustFilters', 'Try adjusting your filters or search criteria')}
                   </p>
                   <Link
                     href="/products"
                     className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                   >
-                    Clear Filters
+                    {t('ui.clearFilters', 'Clear Filters')}
                   </Link>
                 </div>
               ) : (
@@ -261,11 +267,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                             alt={product.heroImageAlt}
                             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                           />
-                          {product.isFeatured && (
+                          {/* {product.isFeatured && (
                             <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
-                              Featured
+                              {t('ui.featured', 'Featured')}
                             </div>
-                          )}
+                          )} */}
                         </div>
 
                         {/* Content */}
@@ -276,13 +282,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           {/* Badges */}
                           <div className="flex items-center gap-2 mb-2">
                             {product.gamme && (
-                              <span className="inline-block px-2 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded">
-                                {product.gamme}
+                              <span className="inline-block px-2 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
+                                {tGamme(product.gamme)}
                               </span>
                             )}
                             {product.specialty && (
-                              <span className="inline-block px-2 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded">
-                                {product.specialty}
+                              <span className="inline-block px-2 py-1 text-xs font-semibold text-[#02445b] bg-[#bdddd1] rounded-full">
+                                {tSpecialty(product.specialty)}
                               </span>
                             )}
                           </div>
@@ -302,13 +308,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                           {/* Series */}
                           {product.series && (
                             <p className="text-xs text-gray-500">
-                              Series: {product.series.name}
+                              {t('ui.series', 'Series')}: {product.series.name}
                             </p>
                           )}
 
                           {/* CTA */}
                           <div className="mt-4 flex items-center text-[#02445b] font-medium group-hover:underline">
-                            View Details
+                            {t('ui.viewDetails', 'View Details')}
                             <svg
                               className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform"
                               fill="none"

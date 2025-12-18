@@ -19,8 +19,9 @@ export async function generateMetadata({ params }: ProductSlugPageProps): Promis
   const product = await getLocalizedProduct(slug, locale);
 
   if (!product) {
+    const notFoundTitle = await getTranslation(locale, 'meta.notFound', 'Page Not Found');
     return {
-      title: await getTranslation(locale, 'meta.notFound', 'Page Not Found'),
+      title: notFoundTitle,
     };
   }
 
@@ -31,8 +32,6 @@ export async function generateMetadata({ params }: ProductSlugPageProps): Promis
   const baseUrl = `${protocol}://${host}`;
   const currentUrl = `${baseUrl}/products/${slug}`;
 
-  // Using simple hreflang approach since we rely on cookies for language switching
-  // but still want to signal availability
   return {
     title: product.metaTitle || product.name,
     description: product.metaDescription || product.shortDescription,
@@ -58,9 +57,10 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
   const { slug } = await params;
   const locale = await getLocale();
   
-  const [product, uiTranslations] = await Promise.all([
+  const [product, uiTranslations, specialtyTranslations] = await Promise.all([
     getLocalizedProduct(slug, locale),
     getTranslationsByCategory(locale, 'ui'),
+    getTranslationsByCategory(locale, 'specialty'),
   ]);
 
   if (!product) {
@@ -68,6 +68,8 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
   }
 
   const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
+  const tGamme = (val: string) => uiTranslations[`ui.gamme.${val.toLowerCase()}`] || val;
+  const tSpecialty = (val: string) => specialtyTranslations[`specialty.${val.toLowerCase()}`] || val;
 
   return (
     <div className="bg-white">
@@ -77,13 +79,13 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
           <ol className="flex items-center space-x-2 text-sm">
             <li>
               <Link href="/" className="text-gray-500 hover:text-gray-700">
-                Home
+                {t('nav.home', 'Home')}
               </Link>
             </li>
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <li>
               <Link href="/products" className="text-gray-500 hover:text-gray-700">
-                Products
+                {t('nav.products', 'Products')}
               </Link>
             </li>
             {product.brand && (
@@ -144,17 +146,17 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
               <div className="flex items-center gap-2 mb-4">
                 {product.gamme && (
                   <span className="inline-block px-3 py-1 text-sm font-semibold text-[#02445b] bg-blue-100 rounded-full">
-                    {product.gamme} Range
+                    {tGamme(product.gamme)}
                   </span>
                 )}
                 {product.specialty && (
                   <span className="inline-block px-3 py-1 text-sm font-semibold text-green-600 bg-green-100 rounded-full">
-                    {product.specialty}
+                     {tSpecialty(product.specialty)}
                   </span>
                 )}
                 {product.isFeatured && (
                   <span className="inline-block px-3 py-1 text-sm font-semibold text-yellow-600 bg-yellow-100 rounded-full">
-                    Featured
+                    {t('ui.featured', 'Featured')}
                   </span>
                 )}
               </div>
@@ -168,7 +170,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
               <div className="mb-6">
                 {product.brand && (
                   <p className="text-lg text-gray-600 mb-2">
-                    by{' '}
+                    {t('ui.by', 'by')}{' '}
                     <Link
                       href={`/brands/${product.brand.slug}`}
                       className="text-[#02445b] hover:underline font-semibold"
@@ -179,7 +181,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
                 )}
                 {product.seriesId && (
                   <p className="text-sm text-gray-500">
-                    Part of Series
+                    {t('ui.partOfSeries', 'Part of Series')}
                   </p>
                 )}
               </div>
@@ -202,7 +204,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
               <div className="flex flex-wrap gap-4 mb-8">
                 <a
                   href="#contact"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
                 >
                   {t('ui.requestQuote', 'Request Quote')}
                 </a>
@@ -211,7 +213,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
                     href="#specifications"
                     className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
                   >
-                    {t('ui.learnMore', 'View Specifications')}
+                    {t('ui.viewSpecs', 'View Specifications')}
                   </a>
                 )}
               </div>
@@ -266,7 +268,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
         <section id="specifications" className="py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
-              Technical Specifications
+               {t('ui.techSpecs', 'Technical Specifications')}
             </h2>
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
               <dl className="divide-y divide-gray-200">
@@ -293,15 +295,15 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
       <section className="py-12 bg-gray-50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-[#02445b]  mb-4">
-            Interested in this product?
+             {t('ui.interestedTitle', 'Interested in this product?')}
           </h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Contact us for more information, pricing, or to schedule a demonstration
+             {t('ui.interestedDesc', 'Contact us for more information, pricing, or to schedule a demonstration')}
           </p>
           <div className="flex justify-center gap-4">
             <Link
               href="/contact"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
             >
               {t('ui.contactUs', 'Contact Us')}
             </Link>

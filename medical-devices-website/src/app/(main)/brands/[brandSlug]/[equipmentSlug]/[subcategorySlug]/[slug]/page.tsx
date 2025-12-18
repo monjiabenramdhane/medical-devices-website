@@ -73,8 +73,19 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
   const { brandSlug, equipmentSlug: equipmentTypeSlug, subcategorySlug, slug } = await params;
   const locale = await getLocale();
   const uiTranslations = await getTranslationsByCategory(locale, 'ui');
+  const specialtyTranslations = await getTranslationsByCategory(locale, 'specialty');
 
   const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
+
+  const getGammeLabel = (gamme: string | undefined) => {
+    if (!gamme) return '';
+    return uiTranslations[`ui.gamme.${gamme.toLowerCase()}`] || gamme;
+  };
+
+  const getSpecialtyLabel = (specialty: string | undefined) => {
+    if (!specialty) return '';
+    return specialtyTranslations[`specialty.${specialty.toLowerCase()}`] || specialty;
+  };
 
   // Try to find as series first
   const series = await prisma.series.findFirst({
@@ -270,12 +281,12 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                         <div className="flex items-center justify-between mb-2">
                           {product.gamme && (
                             <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
-                              {product.gamme}
+                              {getGammeLabel(product.gamme)}
                             </span>
                           )}
                           {product.specialty && (
                             <span className="text-xs text-gray-500">
-                              {product.specialty}
+                              {getSpecialtyLabel(product.specialty)}
                             </span>
                           )}
                         </div>
@@ -407,8 +418,13 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
             {/* Product Info */}
             <div>
               {product.gamme && (
-                <span className="inline-block px-3 py-1 text-sm font-semibold text-[#02445b] bg-blue-100 rounded-full mb-4">
-                  {product.gamme} Range
+                <span className="inline-block px-3 py-1 text-sm font-semibold mr-2 text-[#02445b] bg-blue-100 rounded-full mb-4">
+                  {getGammeLabel(product.gamme)}
+                </span>
+              )}
+              {product.specialty && (
+                <span className="inline-block px-3 py-1 text-sm font-semibold text-[#02445b] bg-[#bddbd1]/80 rounded-full mb-4">
+                  {getSpecialtyLabel(product.specialty)}
                 </span>
               )}
               <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
@@ -416,7 +432,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
               </h1>
               {product.brand && (
                 <p className="text-lg text-gray-600 mb-6">
-                  by{' '}
+                 {t('ui.by', 'by')}{' '}
                   <Link
                     href={`/brands/${brandSlug}`}
                     className="text-[#02445b] hover:underline"
@@ -440,7 +456,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
               <div className="flex flex-wrap gap-4 mb-8">
                 <a
                   href="#contact"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
                 >
                   {t('ui.requestQuote', 'Request Quote')}
                 </a>

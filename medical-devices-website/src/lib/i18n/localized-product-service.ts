@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { type Locale, DEFAULT_LOCALE } from './types';
 import { cache } from 'react';
-import { Prisma } from '@prisma/client';
+import { Prisma, Gamme, Specialty } from '@prisma/client';
 
 // Define the shape of the product with all included relations
 type ProductWithRelations = Prisma.ProductGetPayload<{
@@ -57,10 +57,6 @@ export const getLocalizedProduct = cache(
 
     if (!product) return null;
 
-    console.log(`[getLocalizedProduct] Fetching for ${product.slug} in ${locale}`);
-    console.log(`[getLocalizedProduct] Translations found: ${product.translations.length}`);
-    product.translations.forEach((t: ProductTranslation) => console.log(` - ${t.locale}: ${t.name}`));
-
     // Get translation for current locale or fallback
     const translation =
       product.translations.find((t: ProductTranslation) => t.locale === locale) ||
@@ -94,28 +90,61 @@ export const getLocalizedProduct = cache(
 );
 
 /**
- * Get localized products list
+ * Get localized products list with filtering
  */
 export const getLocalizedProducts = cache(
-  async (locale: Locale, filters?: { brandId?: string; limit?: number; isFeatured?: boolean }) => {
+  async (
+    locale: Locale,
+    filters?: {
+      brandId?: string;
+      limit?: number;
+      isFeatured?: boolean;
+      brandSlug?: string;
+      gamme?: Gamme;
+      specialty?: Specialty;
+      search?: string;
+    }
+  ) => {
+    const where: Prisma.ProductWhereInput = {
+      isActive: true,
+    };
+
+    if (filters?.brandId) where.brandId = filters.brandId;
+    if (filters?.brandSlug) where.brand = { slug: filters.brandSlug };
+    if (filters?.isFeatured !== undefined) where.isFeatured = filters.isFeatured;
+    if (filters?.gamme) where.gamme = filters.gamme;
+    if (filters?.specialty) where.specialty = filters.specialty;
+
+    if (filters?.search) {
+      where.OR = [
+        { name: { contains: filters.search, mode: 'insensitive' } },
+        { shortDescription: { contains: filters.search, mode: 'insensitive' } },
+      ];
+    }
+
     const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
-        brandId: filters?.brandId,
-        isFeatured: filters?.isFeatured,
-      },
+      where,
       include: {
         brand: true,
         translations: {
           where: { locale: { in: [locale, DEFAULT_LOCALE] } },
         },
+        equipmentType: true,
+        subcategory: {
+          include: {
+            equipmentType: true,
+          }
+        },
+        series: true,
       },
       take: filters?.limit,
-      orderBy: { order: 'asc' },
+      orderBy: [
+        { isFeatured: 'desc' },
+        { order: 'asc' },
+      ],
     });
 
     return products.map((product) => {
-      // We can infer the type here from the query, but explicit typing helps clarity
       const translations = product.translations;
 
       const translation =

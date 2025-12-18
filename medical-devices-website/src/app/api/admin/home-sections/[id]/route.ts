@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
@@ -53,6 +54,15 @@ export async function PUT(
     // Process translations
     const { localizedData } = await translateService.processHomeSectionContent(data);
 
+    // Get current section to check key
+    const currentSection = await prisma.homeSection.findUnique({
+      where: { id },
+      select: { sectionKey: true }
+    });
+
+    const isFeaturedSection = currentSection?.sectionKey === 'featuredProducts';
+
+    // Execute update without transaction wrapper to avoid P2028 with stale client
     const section = await prisma.homeSection.update({
       where: { id },
       data: {
@@ -101,9 +111,25 @@ export async function PUT(
       }
     });
 
+    // Sync isFeatured status if this is the "featuredProducts" section
+    // AND we have a valid productIds list (meaning we are in 'link products' mode)
+    if (isFeaturedSection && productIds) {
+      // 1. Set isFeatured=true for all IDs in the list
+      await prisma.product.updateMany({
+        where: { id: { in: productIds } },
+        data: { isFeatured: true, updatedAt: new Date() } // Manual updatedAt
+      });
+
+      // 2. Set isFeatured=false for all OTHER products (global sync)
+      await prisma.product.updateMany({
+        where: { id: { notIn: productIds }, isFeatured: true }, // Optimized to only touch currently featured items
+        data: { isFeatured: false, updatedAt: new Date() } // Manual updatedAt
+      });
+    }
+
     return NextResponse.json<ApiResponse>({
       success: true,
-      data: section,
+      data: section, // Return section directly as result is now section
       message: 'Home section updated successfully',
     });
   } catch (error) {

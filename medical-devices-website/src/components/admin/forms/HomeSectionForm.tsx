@@ -26,6 +26,9 @@ export function HomeSectionForm({ initialData, isEdit = false, allProducts, allB
     return 'none';
   });
 
+  const featuredOnly = allProducts.filter(p => p.isFeatured === true);  
+  const featuredIds = featuredOnly.map(p => p.id);
+
   const [formData, setFormData] = useState<CreateHomeSectionInput>({
     sectionKey: initialData?.sectionKey || '',
     title: initialData?.title || '',
@@ -37,7 +40,9 @@ export function HomeSectionForm({ initialData, isEdit = false, allProducts, allB
     ctaLink: initialData?.ctaLink || '',
     order: initialData?.order || 0,
     isActive: initialData?.isActive ?? true,
-    productIds: initialData?.products?.map(p => p.id) || [],
+    productIds: Array.from(new Set([
+      ...featuredIds
+    ])),
     brandIds: initialData?.brands?.map(b => b.id) || [],
   });
 

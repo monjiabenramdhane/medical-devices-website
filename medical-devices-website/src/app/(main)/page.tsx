@@ -8,7 +8,7 @@ import { BrandService } from '@/services/brand.service';
 import { generateMetadata as genMeta } from '@/lib/utils';
 import { getLocale } from '@/lib/i18n/locale-resolver';
 import { getLocalizedHeroSlides } from '@/lib/i18n/localized-hero-service';
-import { getTranslation } from '@/lib/i18n/translation-service';
+import { getTranslationsByCategory } from '@/lib/i18n/translation-service';
 
 export const metadata = genMeta({
   title: 'Medical Devices Group - Leading Healthcare Solutions',
@@ -21,63 +21,68 @@ export const experimental_ppr = true;
 
 export default async function HomePage() {
   const locale = await getLocale();
+
   // Fetch data in parallel
   const [
-    heroSlides, 
-    fallbackFeaturedProducts, 
-    fallbackBrands, 
+    heroSlides,
+    fallbackFeaturedProducts,
+    fallbackBrands,
     facesBehindDeviceSection,
     featuredSection,
     brandsSection,
-    translationTitles
+    uiTranslations,
+    specialtyTranslations,
   ] = await Promise.all([
-    getLocalizedHeroSlides(locale), 
+    getLocalizedHeroSlides(locale),
     ProductService.getFeatured(6),
     BrandService.getAll(true),
     HomeSectionService.getLocalizedByKey('about', locale),
     HomeSectionService.getLocalizedByKey('featuredProducts', locale),
     HomeSectionService.getLocalizedByKey('brands', locale),
-    // Fetch fallback translations in one go or individually
-    Promise.all([
-      getTranslation(locale, 'ui.learnMore'),
-      getTranslation(locale, 'home.viewAll'),
-    ])
+    getTranslationsByCategory(locale, 'ui'),
+    getTranslationsByCategory(locale, 'specialty'),
   ]);
 
-  const [ tLearnMore, tViewAll] = translationTitles;
+  // Build subset for gamme labels
+  const gammeTranslations = {
+    'ui.gamme.high': uiTranslations['ui.gamme.high'],
+    'ui.gamme.medium': uiTranslations['ui.gamme.medium'],
+    'ui.gamme.low': uiTranslations['ui.gamme.low'],
+  };
 
   // PRODUCT SECTION LOGIC
-  // Use manually selected products if available, else fallback to auto-featured
-  const displayProducts = featuredSection?.products && featuredSection.products.length > 0 
-    ? (featuredSection.products as any[]) // Type assertion needed due to simple Service return type
-    : fallbackFeaturedProducts;
+  const displayProducts =
+    featuredSection?.products && featuredSection.products.length > 0
+      ? (featuredSection.products as any[])
+      : fallbackFeaturedProducts;
 
   const prodTitle = featuredSection?.title;
-  const prodDesc = featuredSection?.subtitle || featuredSection?.content;
-  const prodCta = featuredSection?.ctaText || tViewAll;
-
+  const prodDesc = featuredSection?.subtitle || featuredSection?.content || '';
+  const prodCta = featuredSection?.ctaText || uiTranslations['home.viewAll'];
 
   // BRAND SECTION LOGIC
-  // Use manually selected brands if available, else fallback to all active
-  const displayBrands = brandsSection?.brands && brandsSection.brands.length > 0
-    ? (brandsSection.brands as any[]) 
-    : fallbackBrands;
+  const displayBrands =
+    brandsSection?.brands && brandsSection.brands.length > 0
+      ? (brandsSection.brands as any[])
+      : fallbackBrands;
 
-    const brandTitle = brandsSection?.title;
-    const brandDesc = brandsSection?.subtitle || brandsSection?.content;
-    const brandCta = brandsSection?.ctaText || tViewAll;
+  const brandTitle = brandsSection?.title;
+  const brandDesc = brandsSection?.subtitle || brandsSection?.content || '';
+  const brandCta = brandsSection?.ctaText || uiTranslations['home.viewAll'];
 
   return (
     <>
       <HeroCarousel slides={heroSlides} />
-      <FeaturedProducts 
-        products={displayProducts} 
+      <FeaturedProducts
+        products={displayProducts}
         title={prodTitle}
         description={prodDesc}
         viewAllText={prodCta}
-        learnMoreText={tLearnMore}
+        learnMoreText={uiTranslations['ui.learnMore']}
+        uiTranslations={gammeTranslations}
+        specialtyTranslations={specialtyTranslations}
       />
-      <BrandCarousel 
+      <BrandCarousel
         brands={displayBrands}
         title={brandTitle}
         description={brandDesc}

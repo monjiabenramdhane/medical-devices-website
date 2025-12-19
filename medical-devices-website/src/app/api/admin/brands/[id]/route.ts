@@ -5,25 +5,26 @@ import type { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const brand = await prisma.brand.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         equipmentTypes: {
           orderBy: { order: 'asc' },
         },
       },
     });
-    
+
     if (!brand) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: 'Brand not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: brand,
@@ -39,17 +40,18 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-    
+    const { id } = await context.params;
+
     const body = await req.json();
     const brand = await prisma.brand.update({
-      where: { id: params.id },
+      where: { id },
       data: body,
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: brand,
@@ -66,15 +68,16 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-    
+    const { id } = await context.params;
+
     await prisma.brand.delete({
-      where: { id: params.id },
+      where: { id },
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       message: 'Brand deleted successfully',

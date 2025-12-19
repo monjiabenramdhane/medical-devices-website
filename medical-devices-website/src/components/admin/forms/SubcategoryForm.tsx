@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { ImageUpload } from '../ImageUpload';
 import type { Subcategory, CreateSubcategoryInput, EquipmentType } from '@/types';
 
 interface SubcategoryFormProps {
@@ -19,6 +20,8 @@ export function SubcategoryForm({ initialData, isEdit = false }: SubcategoryForm
     name: initialData?.name || '',
     slug: initialData?.slug || '',
     description: initialData?.description || '',
+    heroImageUrl: initialData?.heroImageUrl || '',
+    heroImageAlt: initialData?.heroImageAlt || '',
     order: initialData?.order || 0,
     isActive: initialData?.isActive ?? true,
     equipmentTypeId: initialData?.equipmentTypeId || '',
@@ -138,6 +141,30 @@ export function SubcategoryForm({ initialData, isEdit = false }: SubcategoryForm
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4">Hero Section</h3>
+        
+        <ImageUpload
+          value={formData.heroImageUrl || ''}
+          onChange={(url) => setFormData({ ...formData, heroImageUrl: url })}
+          folder="subcategories"
+          label="Hero Image"
+        />
+
+        <div className="mt-4">
+          <label htmlFor="heroImageAlt" className="block text-sm font-medium text-gray-700 mb-2">
+            Hero Image Alt Text
+          </label>
+          <input
+            type="text"
+            id="heroImageAlt"
+            value={formData.heroImageAlt || ''}
+            onChange={(e) => setFormData({ ...formData, heroImageAlt: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
       </div>
 

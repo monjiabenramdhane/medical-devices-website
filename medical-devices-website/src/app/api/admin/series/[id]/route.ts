@@ -5,11 +5,12 @@ import type { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const series = await prisma.series.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         subcategory: {
           include: {
@@ -22,14 +23,14 @@ export async function GET(
         },
       },
     });
-    
+
     if (!series) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: 'Series not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: series,
@@ -45,14 +46,15 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-    
+    const { id } = await context.params;
+
     const body = await req.json();
     const series = await prisma.series.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...body,
         subcategoryId: body.subcategoryId || null,
@@ -69,7 +71,7 @@ export async function PUT(
         },
       },
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: series,
@@ -86,15 +88,16 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-    
+    const { id } = await context.params;
+
     await prisma.series.delete({
-      where: { id: params.id },
+      where: { id },
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       message: 'Series deleted successfully',

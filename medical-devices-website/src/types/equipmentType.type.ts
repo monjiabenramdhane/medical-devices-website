@@ -7,6 +7,8 @@ export interface EquipmentType {
   slug: string;
   description?: string | null;
   iconUrl?: string | null;
+  heroImageUrl?: string | null;
+  heroImageAlt?: string | null;
   order: number;
   isActive: boolean;
   brandId: string;
@@ -21,6 +23,8 @@ export interface CreateEquipmentTypeInput {
   slug: string;
   description?: string;
   iconUrl?: string;
+  heroImageUrl?: string;
+  heroImageAlt?: string;
   order?: number;
   isActive?: boolean;
   brandId: string;

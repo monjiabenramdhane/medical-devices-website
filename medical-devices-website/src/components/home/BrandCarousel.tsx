@@ -41,7 +41,7 @@ export function BrandCarousel({ brands, title, description, viewAllText }: Brand
         <div className="text-center mb-12">
           <h2
             id="brands-heading"
-            className="text-3xl font-bold text-[#02445b]  sm:text-4xl"
+            className="text-3xl font-bold text-[#02445b] sm:text-4xl"
           >
             {title}
           </h2>
@@ -70,6 +70,11 @@ export function BrandCarousel({ brands, title, description, viewAllText }: Brand
                   <span className="text-xs text-gray-500 mt-1 text-center">
                     {brand.equipmentTypes.length} equipment types
                   </span>
+                )}
+                {brand.description && (
+                  <p className="text-gray-600 text-sm text-center line-clamp-3 mb-4">
+                    {brand.description}
+                  </p>
                 )}
               </Link>
             ))}

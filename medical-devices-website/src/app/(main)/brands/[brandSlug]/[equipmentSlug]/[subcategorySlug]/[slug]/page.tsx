@@ -1,12 +1,13 @@
+
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
-import { generateMetadata as genMeta } from '@/lib/utils';
-import { ChevronRight, Package } from 'lucide-react';
-import type { Metadata } from 'next';
+import { getLocalizedSeries } from '@/lib/i18n/localized-brand-service';
 import { getLocalizedProduct } from '@/lib/i18n/localized-product-service';
 import { getLocale } from '@/lib/i18n/locale-resolver';
 import { getTranslationsByCategory } from '@/lib/i18n/translation-service';
+import { generateMetadata as genMeta } from '@/lib/utils';
+import { ChevronRight, Package } from 'lucide-react';
+import type { Metadata } from 'next';
 
 interface DynamicSlugPageProps {
   params: Promise<{
@@ -22,31 +23,11 @@ export async function generateMetadata({ params }: DynamicSlugPageProps): Promis
   const locale = await getLocale();
 
   // Try to find as series first
-  const series = await prisma.series.findFirst({
-    where: {
-      slug: slug,
-      subcategory: {
-        slug: subcategorySlug,
-        equipmentType: {
-          slug: equipmentTypeSlug,
-          brand: { slug: brandSlug },
-        },
-      },
-    },
-    include: {
-      subcategory: {
-        include: {
-          equipmentType: {
-            include: { brand: true },
-          },
-        },
-      },
-    },
-  });
+  const series = await getLocalizedSeries(brandSlug, equipmentTypeSlug, subcategorySlug, slug, locale);
 
   if (series) {
     return genMeta({
-      title: `${series.name} - ${series.subcategory?.equipmentType.brand.name}`,
+      title: `${series.name} - ${series.subcategory?.equipmentType?.brand?.name}`,
       description: series.description || `Explore the ${series.name} product series`,
       image: series.imageUrl || undefined,
     });
@@ -88,86 +69,71 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
   };
 
   // Try to find as series first
-  const series = await prisma.series.findFirst({
-    where: {
-      slug: slug,
-      subcategory: {
-        slug: subcategorySlug,
-        equipmentType: {
-          slug: equipmentTypeSlug,
-          brand: { slug: brandSlug },
-        },
-      },
-      isActive: true,
-    },
-    include: {
-      subcategory: {
-        include: {
-          equipmentType: {
-            include: { brand: true },
-          },
-        },
-      },
-      products: {
-        where: { isActive: true },
-        orderBy: { order: 'asc' },
-        include: {
-          brand: true,
-          translations: {
-             where: { locale: { in: [locale, 'en'] } },
-          },
-          gallery: {
-            orderBy: { order: 'asc' },
-            take: 1,
-          },
-        },
-      },
-    },
-  });
+  const series = await getLocalizedSeries(brandSlug, equipmentTypeSlug, subcategorySlug, slug, locale);
 
   // If found as series, render series page
-  // Note: Series content is not deeply localized yet, but we can localize listing products
   if (series) {
-    const brand = series.subcategory!.equipmentType.brand;
-    const equipmentType = series.subcategory!.equipmentType;
-    const subcategory = series.subcategory!;
-
-    // Map series products with basic localization fallback
-    interface SeriesProduct {
-      name: string;
-      shortDescription: string | null;
-      translations: {
-        locale: string;
-        name: string;
-        shortDescription: string | null;
-      }[];
-    }
-
-    const localizedSeriesProducts = series.products.map((p) => {
-       const translations = p.translations as SeriesProduct['translations'];
-       const trans = translations.find((t) => t.locale === locale) || translations.find((t) => t.locale === 'en');
-       return {
-         ...p,
-         name: trans?.name || p.name,
-         shortDescription: trans?.shortDescription || p.shortDescription
-       };
-    });
+    const brand = series.subcategory.equipmentType.brand;
+    const equipmentType = series.subcategory.equipmentType;
+    const subcategory = series.subcategory;
+    const localizedSeriesProducts = series.products;
 
     return (
       <div className="bg-white">
+        {/* Series Header */}
+        <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+              <div>
+                <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
+                  {series.name}
+                </h1>
+                <p className="text-lg text-gray-600 mb-6">
+                  {subcategory.name} •{' '}
+                  <Link
+                    href={`/brands/${brandSlug}`}
+                    className="text-[#02445b] hover:underline"
+                  >
+                    {brand.name}
+                  </Link>
+                </p>
+                {series.description && (
+                  <div className="prose prose-lg text-gray-700 mb-8">
+                    <p>{series.description}</p>
+                  </div>
+                )}
+                {localizedSeriesProducts.length > 0 && (
+                  <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
+                    <Package className="h-5 w-5 mr-2" />
+                    {localizedSeriesProducts.length} {localizedSeriesProducts.length === 1 ? t('ui.product', 'product') : t('ui.products', 'products')} {t('ui.inThisSeries', 'in this series')}
+                  </div>
+                )}
+              </div>
+              {series.imageUrl && (
+                <div className="mt-8 lg:mt-0">
+                  <img
+                    src={series.imageUrl}
+                    alt={series.imageAlt || series.name}
+                    className="rounded-lg shadow-xl"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
         {/* Breadcrumbs */}
         <nav className="bg-gray-50 py-4" aria-label="Breadcrumb">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ol className="flex items-center space-x-2 text-sm flex-wrap">
               <li>
                 <Link href="/" className="text-gray-500 hover:text-gray-700">
-                  Home
+                  {t('nav.home', 'Home')}
                 </Link>
               </li>
               <ChevronRight className="h-4 w-4 text-gray-400" />
               <li>
                 <Link href="/brands" className="text-gray-500 hover:text-gray-700">
-                  Brands
+                  {t('nav.brands', 'Brands')}
                 </Link>
               </li>
               <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -205,75 +171,33 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
           </div>
         </nav>
 
-        {/* Series Header */}
-        <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
-              <div>
-                <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
-                  {series.name}
-                </h1>
-                <p className="text-lg text-gray-600 mb-6">
-                  {subcategory.name} •{' '}
-                  <Link
-                    href={`/brands/${brandSlug}`}
-                    className="text-[#02445b] hover:underline"
-                  >
-                    {brand.name}
-                  </Link>
-                </p>
-                {series.description && (
-                  <div className="prose prose-lg text-gray-700 mb-8">
-                    <p>{series.description}</p>
-                  </div>
-                )}
-                {localizedSeriesProducts.length > 0 && (
-                  <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
-                    <Package className="h-5 w-5 mr-2" />
-                    {localizedSeriesProducts.length} {localizedSeriesProducts.length === 1 ? 'product' : 'products'} in this series
-                  </div>
-                )}
-              </div>
-              {series.imageUrl && (
-                <div className="mt-8 lg:mt-0">
-                  <img
-                    src={series.imageUrl}
-                    alt={series.imageAlt || series.name}
-                    className="rounded-lg shadow-xl"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-
         {/* Products Grid */}
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
-              Products in {series.name}
+              {t('ui.productsIn', 'Products in')} {series.name}
             </h2>
 
             {localizedSeriesProducts.length === 0 ? (
               <div className="text-center py-12 bg-gray-50 rounded-lg">
                 <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">No products available in this series yet.</p>
+                <p className="text-gray-500">{t('ui.noProductsInSeries', 'No products available in this series yet.')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {localizedSeriesProducts.map((product) => (
+                {localizedSeriesProducts.map((product: any) => (
                   <article
                     key={product.id}
                     className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden"
                   >
                     <Link
-                      href={`/brands/${brandSlug}/${equipmentTypeSlug}/${subcategorySlug}/${product.slug}`}
+                      href={`/products/${product.slug}`} // Canonical
                       className="block"
                     >
                       <div className="aspect-w-16 aspect-h-9 bg-gray-200">
                         <img
                           src={product.heroImageUrl}
-                          alt={product.heroImageAlt}
+                          alt={product.heroImageAlt || product.name}
                           className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
@@ -299,7 +223,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                           </p>
                         )}
                         <div className="flex items-center text-[#02445b] font-medium group-hover:underline">
-                          View Details
+                          {t('ui.viewDetails', 'View Details')}
                           <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
@@ -321,24 +245,22 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
     notFound();
   }
 
-  // Note: product.sections and specifications are already included by getLocalizedProduct
-
-  // Render product page
+  // Render product page (same design as main product page)
   return (
     <div className="bg-white">
       {/* Breadcrumbs */}
       <nav className="bg-gray-50 py-4" aria-label="Breadcrumb">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <ol className="flex items-center space-x-2 text-sm">
+          <ol className="flex items-center space-x-2 text-sm flex-wrap">
             <li>
               <Link href="/" className="text-gray-500 hover:text-gray-700">
-                Home
+                {t('nav.home', 'Home')}
               </Link>
             </li>
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <li>
               <Link href="/brands" className="text-gray-500 hover:text-gray-700">
-                Brands
+                {t('nav.brands', 'Brands')}
               </Link>
             </li>
             <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -393,7 +315,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
               <div className="aspect-w-4 aspect-h-3 bg-gray-200 rounded-lg overflow-hidden mb-4">
                 <img
                   src={product.heroImageUrl}
-                  alt={product.heroImageAlt}
+                  alt={product.heroImageAlt || product.name}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -446,7 +368,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
                   {product.shortDescription}
                 </p>
               )}
-              {/* Full Description - Added if available, though not in original, good for SEO */}
+              {/* Full Description */}
               {product.fullDescription && (
                  <div className="prose prose-lg text-gray-700 mb-8">
                    <p>{product.fullDescription}</p>
@@ -520,7 +442,7 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
         <section id="specifications" className="py-12">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
-              Technical Specifications
+              {t('ui.specifications', 'Technical Specifications')}
             </h2>
             <div className="bg-white shadow overflow-hidden sm:rounded-lg">
               <dl className="divide-y divide-gray-200">

@@ -1,17 +1,32 @@
+
 import Link from 'next/link';
-import { BrandService } from '@/services/brand.service';
+import { getLocalizedBrands } from '@/lib/i18n/localized-brand-service';
+import { getLocale } from '@/lib/i18n/locale-resolver';
+import { getTranslationsByCategory } from '@/lib/i18n/translation-service';
 import { generateMetadata as genMeta } from '@/lib/utils';
 import type { Metadata } from 'next';
 
-export const metadata: Metadata = genMeta({
-  title: 'Our Brands - Medical Devices',
-  description: 'Explore our portfolio of leading medical device brands',
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const brands = await getTranslationsByCategory(locale, 'brands');
+  return genMeta({
+    title: brands['brands.metaTitle'] || 'Our Brands - Medical Devices',
+    description:
+      brands['brands.metaDescription'] ||
+      'Explore our portfolio of leading medical device brands',
+  });
+}
 
 export const dynamic = 'force-dynamic';
 
 export default async function BrandsPage() {
-  const brands = await BrandService.getAll(true);
+  const locale = await getLocale();
+  const [brands, brandsUi] = await Promise.all([
+    getLocalizedBrands(locale),
+    getTranslationsByCategory(locale, 'brands')
+  ]);
+
+  const t = (key: string, fallback: string) => brandsUi[key] || fallback;
 
   return (
     <div className="bg-white">
@@ -19,10 +34,10 @@ export default async function BrandsPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
-              Our Brands
+              {t('brands.title', 'Our Brands')}
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We partner with the world's leading medical device manufacturers to bring you the best healthcare solutions.
+              {t('brands.subtitle', "We partner with the world's leading medical device manufacturers to bring you the best healthcare solutions.")}
             </p>
           </div>
         </div>
@@ -56,7 +71,7 @@ export default async function BrandsPage() {
                   {brand.equipmentTypes && brand.equipmentTypes.length > 0 && (
                     <div className="text-center">
                       <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
-                        {brand.equipmentTypes.length} equipment {brand.equipmentTypes.length === 1 ? 'type' : 'types'}
+                        {brand.equipmentTypes.length} {t('brands.equipmentTypes', 'equipment types')}
                       </span>
                     </div>
                   )}

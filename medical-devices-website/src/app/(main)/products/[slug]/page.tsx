@@ -81,6 +81,8 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
               <Link href="/" className="text-gray-500 hover:text-gray-700">
                 {t('nav.home', 'Home')}
               </Link>
+
+              
             </li>
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <li>

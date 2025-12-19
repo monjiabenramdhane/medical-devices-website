@@ -19,9 +19,9 @@ export async function Footer() {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <img
-              src="/images/logo-white.png"
+              src="/images/logo.png"
               alt="Medical Devices Group"
-              className="h-10 w-auto mb-4"
+              className="h-14 w-auto mb-6 bg-white rounded-lg p-2"
               // Server component cannot use onError directly for image fallback like client component
               // In production, use next/image or handle at source
             />

@@ -26,6 +26,8 @@ export function BrandForm({ initialData, isEdit = false }: BrandFormProps) {
     isActive: initialData?.isActive ?? true,
     metaTitle: initialData?.metaTitle || '',
     metaDescription: initialData?.metaDescription || '',
+    heroImageUrl: initialData?.heroImageUrl || '',
+    heroImageAlt: initialData?.heroImageAlt || '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,6 +145,30 @@ export function BrandForm({ initialData, isEdit = false }: BrandFormProps) {
             required
             value={formData.logoAlt}
             onChange={(e) => setFormData({ ...formData, logoAlt: e.target.value })}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4">Hero Section</h3>
+        
+        <ImageUpload
+          value={formData.heroImageUrl || ''}
+          onChange={(url) => setFormData({ ...formData, heroImageUrl: url })}
+          folder="brands"
+          label="Hero Image"
+        />
+
+        <div className="mt-4">
+          <label htmlFor="heroImageAlt" className="block text-sm font-medium text-gray-700 mb-2">
+            Hero Image Alt Text
+          </label>
+          <input
+            type="text"
+            id="heroImageAlt"
+            value={formData.heroImageAlt || ''}
+            onChange={(e) => setFormData({ ...formData, heroImageAlt: e.target.value })}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>

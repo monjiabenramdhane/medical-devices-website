@@ -58,6 +58,8 @@ model Brand {
   logoUrl         String
   logoAlt         String
   websiteUrl      String?
+  heroImageUrl    String?
+  heroImageAlt    String?
   order           Int                @default(0)
   isActive        Boolean            @default(true)
   metaTitle       String?
@@ -75,19 +77,22 @@ model Brand {
 }
 
 model EquipmentType {
-  id            String        @id @default(cuid())
+  id            String                     @id @default(cuid())
   name          String
   slug          String
   description   String?
   iconUrl       String?
-  order         Int           @default(0)
-  isActive      Boolean       @default(true)
+  heroImageUrl  String?
+  heroImageAlt  String?
+  order         Int                        @default(0)
+  isActive      Boolean                    @default(true)
   brandId       String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime?     @updatedAt
-  brand         Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime?                  @updatedAt
+  brand         Brand                      @relation(fields: [brandId], references: [id], onDelete: Cascade)
   products      Product[]
   subcategories Subcategory[]
+  translations  EquipmentTypeTranslation[]
 
   @@unique([brandId, slug])
   @@index([brandId])
@@ -96,18 +101,21 @@ model EquipmentType {
 }
 
 model Subcategory {
-  id              String        @id @default(cuid())
+  id              String                   @id @default(cuid())
   name            String
   slug            String
   description     String?
-  order           Int           @default(0)
-  isActive        Boolean       @default(true)
+  heroImageUrl    String?
+  heroImageAlt    String?
+  order           Int                      @default(0)
+  isActive        Boolean                  @default(true)
   equipmentTypeId String
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime?     @updatedAt
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime?                @updatedAt
   products        Product[]
   series          Series[]
-  equipmentType   EquipmentType @relation(fields: [equipmentTypeId], references: [id], onDelete: Cascade)
+  translations    SubcategoryTranslation[]
+  equipmentType   EquipmentType            @relation(fields: [equipmentTypeId], references: [id], onDelete: Cascade)
 
   @@unique([equipmentTypeId, slug])
   @@index([equipmentTypeId])
@@ -116,19 +124,20 @@ model Subcategory {
 }
 
 model Series {
-  id            String       @id @default(cuid())
+  id            String              @id @default(cuid())
   name          String
   slug          String
   description   String?
   imageUrl      String?
   imageAlt      String?
-  order         Int          @default(0)
-  isActive      Boolean      @default(true)
+  order         Int                 @default(0)
+  isActive      Boolean             @default(true)
   subcategoryId String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime?    @updatedAt
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime?           @updatedAt
   products      Product[]
-  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  translations  SeriesTranslation[]
+  subcategory   Subcategory?        @relation(fields: [subcategoryId], references: [id])
 
   @@unique([subcategoryId, slug])
   @@index([subcategoryId])
@@ -372,4 +381,51 @@ enum Specialty {
 enum UserRole {
   ADMIN
   USER
+}
+
+model EquipmentTypeTranslation {
+  id              String        @id @default(cuid())
+  equipmentTypeId String
+  locale          String
+  name            String
+  description     String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  equipmentType   EquipmentType @relation(fields: [equipmentTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([equipmentTypeId, locale])
+  @@index([locale])
+  @@map("equipment_type_translations")
+}
+
+model SubcategoryTranslation {
+  id            String      @id @default(cuid())
+  subcategoryId String
+  locale        String
+  name          String
+  description   String?
+  heroImageAlt  String? 
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  subcategory   Subcategory @relation(fields: [subcategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([subcategoryId, locale])
+  @@index([locale])
+  @@map("subcategory_translations")
+}
+
+model SeriesTranslation {
+  id          String   @id @default(cuid())
+  seriesId    String
+  locale      String
+  name        String
+  description String?
+  imageAlt    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  series      Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+
+  @@unique([seriesId, locale])
+  @@index([locale])
+  @@map("series_translations")
 }

@@ -5,11 +5,12 @@ import type { ApiResponse } from '@/types';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await context.params;
     const equipmentType = await prisma.equipmentType.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         brand: true,
         subcategories: {
@@ -17,14 +18,14 @@ export async function GET(
         },
       },
     });
-    
+
     if (!equipmentType) {
       return NextResponse.json<ApiResponse>(
         { success: false, error: 'Equipment type not found' },
         { status: 404 }
       );
     }
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: equipmentType,
@@ -40,20 +41,21 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-    
+    const { id } = await context.params;
+
     const body = await req.json();
     const equipmentType = await prisma.equipmentType.update({
-      where: { id: params.id },
+      where: { id },
       data: body,
       include: {
         brand: true,
       },
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: equipmentType,
@@ -70,15 +72,16 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     await requireAdmin();
-    
+    const { id } = await context.params;
+
     await prisma.equipmentType.delete({
-      where: { id: params.id },
+      where: { id },
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       message: 'Equipment type deleted successfully',

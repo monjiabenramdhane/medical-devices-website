@@ -12,6 +12,8 @@ export interface Brand {
   isActive: boolean;
   metaTitle?: string | null;
   metaDescription?: string | null;
+  heroImageUrl?: string | null;
+  heroImageAlt?: string | null;
   createdAt: Date;
   updatedAt: Date;
   equipmentTypes?: EquipmentType[];
@@ -28,6 +30,8 @@ export interface CreateBrandInput {
   isActive?: boolean;
   metaTitle?: string;
   metaDescription?: string;
+  heroImageUrl?: string;
+  heroImageAlt?: string;
 }
 
-export interface UpdateBrandInput extends Partial<CreateBrandInput> {}
+export interface UpdateBrandInput extends Partial<CreateBrandInput> { }

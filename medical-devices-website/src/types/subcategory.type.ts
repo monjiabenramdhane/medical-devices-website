@@ -6,6 +6,8 @@ export interface Subcategory {
   name: string;
   slug: string;
   description?: string | null;
+  heroImageUrl?: string | null;
+  heroImageAlt?: string | null;
   order: number;
   isActive: boolean;
   equipmentTypeId: string;
@@ -19,6 +21,8 @@ export interface CreateSubcategoryInput {
   name: string;
   slug: string;
   description?: string;
+  heroImageUrl?: string;
+  heroImageAlt?: string;
   order?: number;
   isActive?: boolean;
   equipmentTypeId: string;

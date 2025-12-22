@@ -429,3 +429,96 @@ model SeriesTranslation {
   @@index([locale])
   @@map("series_translations")
 }
+
+model FooterConfig {
+  id           String                    @id @default(cuid())
+  email        String?
+  phone        String?
+  facebookUrl  String?
+  twitterUrl   String?
+  linkedinUrl  String?
+  instagramUrl String?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+  translations FooterConfigTranslation[]
+  sections     FooterSection[]
+
+  @@map("footer_configs")
+}
+
+model FooterConfigTranslation {
+  id                 String       @id @default(cuid())
+  footerConfigId     String
+  locale             String
+  name               String?      @db.Text
+  address            String?      @db.Text
+  companyDescription String?      @db.Text
+  copyrightText      String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  footerConfig       FooterConfig @relation(fields: [footerConfigId], references: [id], onDelete: Cascade)
+
+  @@unique([footerConfigId, locale])
+  @@index([locale])
+  @@map("footer_config_translations")
+}
+
+model FooterSection {
+  id             String                     @id @default(cuid())
+  footerConfigId String
+  order          Int                        @default(0)
+  isActive       Boolean                    @default(true)
+  createdAt      DateTime                   @default(now())
+  updatedAt      DateTime                   @updatedAt
+  footerConfig   FooterConfig               @relation(fields: [footerConfigId], references: [id], onDelete: Cascade)
+  translations   FooterSectionTranslation[]
+  links          FooterLink[]
+
+  @@index([footerConfigId])
+  @@index([order])
+  @@map("footer_sections")
+}
+
+model FooterSectionTranslation {
+  id              String        @id @default(cuid())
+  footerSectionId String
+  locale          String
+  title           String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  footerSection   FooterSection @relation(fields: [footerSectionId], references: [id], onDelete: Cascade)
+
+  @@unique([footerSectionId, locale])
+  @@index([locale])
+  @@map("footer_section_translations")
+}
+
+model FooterLink {
+  id              String                  @id @default(cuid())
+  footerSectionId String
+  url             String
+  order           Int                     @default(0)
+  isActive        Boolean                 @default(true)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  footerSection   FooterSection           @relation(fields: [footerSectionId], references: [id], onDelete: Cascade)
+  translations    FooterLinkTranslation[]
+
+  @@index([footerSectionId])
+  @@index([order])
+  @@map("footer_links")
+}
+
+model FooterLinkTranslation {
+  id           String     @id @default(cuid())
+  footerLinkId String
+  locale       String
+  label        String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  footerLink   FooterLink @relation(fields: [footerLinkId], references: [id], onDelete: Cascade)
+
+  @@unique([footerLinkId, locale])
+  @@index([locale])
+  @@map("footer_link_translations")
+}

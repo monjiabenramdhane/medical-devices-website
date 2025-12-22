@@ -70,6 +70,14 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
                 <FileText className="h-5 w-5 mr-3" />
                 Home Sections
               </Link>
+              <Link
+                href="/admin/footer"
+                className="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+                onClick={() => setIsOpen(false)}
+              >
+                <LayoutDashboard className="h-5 w-5 mr-3" />
+                Footer Config
+              </Link>
 
               <div className="pt-4 pb-2">
                 <h3 className="px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">

@@ -44,7 +44,7 @@ export function LanguageSwitcher() {
           isPending ? 'opacity-50 cursor-not-allowed' : ''
         }`}
       >
-        <span className="hidden md:inline">{currentLanguage.label}</span>
+        <span className="inline">{currentLanguage.label}</span>
         <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 

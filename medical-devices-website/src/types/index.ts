@@ -7,3 +7,4 @@ export * from './series.type';
 export * from './product.type';
 export * from './user.type';
 export * from './cloudinary.type';
+export * from './footer.type';

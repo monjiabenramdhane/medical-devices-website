@@ -1,6 +1,5 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import {
   LayoutDashboard,
@@ -68,6 +67,13 @@ export default async function AdminLayout({
             >
               <FileText className="h-5 w-5 mr-3" />
               Home Sections
+            </Link>
+            <Link
+              href="/admin/footer"
+              className="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              <FileText className="h-5 w-5 mr-3" />
+              Footer
             </Link>
 
             <div className="pt-4 pb-2">

@@ -70,7 +70,7 @@ export function HeroCarousel({ slides }: HeroCarouselProps) {
                 </p>
               )}
 
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-[#02445b] mb-4">
+              <h1 className="text-4xl lg:leading-[1.2] lg:text-5xl xl:text-[3.5rem] xl:leading-[1.2] font-bold text-[#02445b] mb-4">
                 {currentSlide.title}
               </h1>
 

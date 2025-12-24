@@ -1,3 +1,4 @@
+@import "./fonts.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,6 +6,7 @@
 @layer base {
   html {
     @apply scroll-smooth;
+    font-family: "Poppins", sans-serif;
   }
   
   body {

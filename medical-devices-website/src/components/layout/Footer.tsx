@@ -105,7 +105,7 @@ export async function Footer() {
       <div className="mt-4 pt-20 pb-12 relative overflow-hidden ">
           <div className="absolute top-0 left-0 z-0 max-w-[1280px] opacity-20" >
           <Image
-            src="/images/path1.svg"
+            src="/images/path.svg"
             alt="Footer Decor"
             width={1280}
             height={369}

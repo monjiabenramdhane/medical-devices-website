@@ -1,18 +1,30 @@
 import { prisma } from '@/lib/prisma';
+import { cache } from 'react';
 import type { Brand, CreateBrandInput, UpdateBrandInput } from '@/types';
+
+// Cached version of getAll with optimized field selection
+const getCachedBrands = cache(async (activeOnly: boolean) => {
+  return prisma.brand.findMany({
+    where: activeOnly ? { isActive: true } : undefined,
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      logoUrl: true,
+      logoAlt: true,
+      order: true,
+      isActive: true,
+      createdAt: true,
+      updatedAt: true,
+      // Omit: description, equipmentTypes - not needed for list view
+    },
+    orderBy: { order: 'asc' },
+  });
+});
 
 export class BrandService {
   static async getAll(activeOnly: boolean = false): Promise<Brand[]> {
-    return prisma.brand.findMany({
-      where: activeOnly ? { isActive: true } : undefined,
-      include: {
-        equipmentTypes: {
-          where: activeOnly ? { isActive: true } : undefined,
-          orderBy: { order: 'asc' },
-        },
-      },
-      orderBy: { order: 'asc' },
-    });
+    return getCachedBrands(activeOnly);
   }
 
   static async getBySlug(slug: string): Promise<Brand | null> {

@@ -13,10 +13,10 @@ export const getLocalizedHeroSlides = cache(async (locale: Locale) => {
     orderBy: { order: 'asc' },
   });
 
-  return slides.map(slide => {
+  return slides.map((slide: any) => {
     const translation =
-      slide.hero_slide_translations.find((t) => t.locale === locale) ||
-      slide.hero_slide_translations.find((t) => t.locale === DEFAULT_LOCALE);
+      slide.hero_slide_translations.find((t: any) => t.locale === locale) ||
+      slide.hero_slide_translations.find((t: any) => t.locale === DEFAULT_LOCALE);
 
     return {
       ...slide,

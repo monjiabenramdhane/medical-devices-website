@@ -1,6 +1,7 @@
 
 import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 import { prisma } from '@/lib/prisma';
+import { cache } from 'react';
 import { HomeSection } from '@prisma/client';
 
 export const HomeSectionService = {
@@ -20,7 +21,8 @@ export const HomeSectionService = {
     });
   },
 
-  getLocalizedByKey: async (key: string, locale: string = DEFAULT_LOCALE) => {
+  getLocalizedByKey: cache(async (key: string, locale: string = DEFAULT_LOCALE) => {
+    // Optimized query to reduce payload
     const section = await prisma.homeSection.findUnique({
       where: { sectionKey: key, isActive: true },
       include: {
@@ -30,15 +32,13 @@ export const HomeSectionService = {
         products: {
           where: { isActive: true },
           include: {
-            brand: true,
-            equipmentType: true,
-            subcategory: {
-              include: {
-                equipmentType: true,
-              },
+            brand: {
+              select: { id: true, name: true, slug: true },
             },
-            series: true,
-            // Fetch product translations
+            equipmentType: {
+              select: { id: true, name: true },
+            },
+            // Omit: gallery, subcategory, series, fullDescription, specifications
             translations: {
               where: { locale },
             }
@@ -48,7 +48,6 @@ export const HomeSectionService = {
         brands: {
           where: { isActive: true },
           include: {
-            // Fetch brand translations
             translations: {
               where: { locale },
             }
@@ -63,7 +62,7 @@ export const HomeSectionService = {
     const translation = section.home_section_translations[0];
 
     // Map localized fields for products
-    const localizedProducts = section.products.map(product => {
+    const localizedProducts = section.products.map((product: any) => {
       const prodTranslation = product.translations[0];
       return {
         ...product,
@@ -79,7 +78,7 @@ export const HomeSectionService = {
     });
 
     // Map localized fields for brands
-    const localizedBrands = section.brands.map(brand => {
+    const localizedBrands = section.brands.map((brand: any) => {
       const brandTranslation = brand.translations[0];
       return {
         ...brand,
@@ -102,5 +101,5 @@ export const HomeSectionService = {
       products: localizedProducts,
       brands: localizedBrands,
     };
-  },
+  }),
 };

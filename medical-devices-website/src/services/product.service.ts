@@ -1,5 +1,28 @@
 import { prisma } from '@/lib/prisma';
+import { cache } from 'react';
 import type { Product, CreateProductInput, UpdateProductInput, Gamme, Specialty } from '@/types';
+
+// Cached version of getFeatured with ISR revalidation
+// Optimized to reduce payload by omitting heavy fields
+const getCachedFeaturedProducts = cache(async (limit: number) => {
+  return prisma.product.findMany({
+    where: {
+      isFeatured: true,
+      isActive: true,
+    },
+    include: {
+      brand: {
+        select: { id: true, name: true, slug: true },
+      },
+      equipmentType: {
+        select: { id: true, name: true },
+      },
+      // Omit: gallery, subcategory, series, fullDescription, specifications
+    },
+    orderBy: { order: 'asc' },
+    take: limit,
+  });
+});
 
 export class ProductService {
   static async getAll(filters?: {
@@ -128,10 +151,6 @@ export class ProductService {
   }
 
   static async getFeatured(limit: number = 6): Promise<Product[]> {
-    return this.getAll({
-      isFeatured: true,
-      isActive: true,
-      limit,
-    });
+    return getCachedFeaturedProducts(limit) as any;
   }
 }

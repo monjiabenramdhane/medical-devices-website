@@ -172,9 +172,9 @@ export function FooterSectionList() {
         <div className="bg-white p-6 rounded-lg shadow mt-8">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-semibold">Footer Sections & Links</h2>
-                <button onClick={() => openSectionModal()} className="flex items-center px-4 py-2 bg-[#bddbd1] text-[#02445b] rounded hover:bg-[#02445b]/90 hover:text-white">
+                {/* <button onClick={() => openSectionModal()} className="flex items-center px-4 py-2 bg-[#bddbd1] text-[#02445b] rounded hover:bg-[#02445b]/90 hover:text-white">
                     <Plus className="w-4 h-4 mr-2" /> Add Section
-                </button>
+                </button> */}
             </div>
 
             <div className="space-y-6">
@@ -186,9 +186,9 @@ export function FooterSectionList() {
                                 <button onClick={() => openSectionModal(section)} className="p-1 text-[#02445b] hover:bg-[#02445b]/90 hover:text-white rounded">
                                     <Edit2 className="w-4 h-4" />
                                 </button>
-                                <button onClick={() => deleteSection(section.id)} className="p-1 text-red-600 hover:bg-red-100 rounded">
+                                {/* <button onClick={() => deleteSection(section.id)} className="p-1 text-red-600 hover:bg-red-100 rounded">
                                     <Trash2 className="w-4 h-4" />
-                                </button>
+                                </button> */}
                             </div>
                         </div>
 

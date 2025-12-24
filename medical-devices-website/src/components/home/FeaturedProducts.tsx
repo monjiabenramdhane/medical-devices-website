@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Product } from '@/types';
 
 interface FeaturedProductsProps {
@@ -7,8 +8,8 @@ interface FeaturedProductsProps {
   description?: string;
   viewAllText?: string;
   learnMoreText?: string;
-  uiTranslations?: Record<string, string>; // added to support translations
-  specialtyTranslations?: Record<string, string>; // added to support translations
+  uiTranslations?: Record<string, string>;
+  specialtyTranslations?: Record<string, string>;
 }
 
 export function FeaturedProducts({ 
@@ -58,27 +59,31 @@ export function FeaturedProducts({
               className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden"
             >
               <Link
-                href={`/brands/${product.brand?.slug}/${product.equipmentType?.slug || (product.subcategory as any)?.equipmentType?.slug}/${product.subcategory?.slug}/${product.slug}`}
+                href={`/brands/${product.brand?.slug}/${product.equipmentType?.slug || (product.subcategory as any)?.equipmentType?.slug || 'unknown'}/${product.subcategory?.slug || 'unknown'}/${product.slug}`}
                 className="block"
               >
-                <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-                  <img
+                <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                  <Image
                     src={product.heroImageUrl || '/images/placeholder-product.jpg'}
-                    alt={product.heroImageAlt || product.name}
-                    className="w-full h-[400px] object-cover group-hover:scale-105 transition-transform duration-300"
+                    alt={product.heroImageAlt || product.name || 'Product image'}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="p-6">
-                  {product.gamme && (
-                    <span className="inline-block px-3 py-1 text-xs mr-2 font-semibold text-[#02445b] bg-blue-100 rounded-full mb-2">
-                      {getGammeLabel(product.gamme)}
-                    </span>
-                  )}
-                  {product.specialty && (
-                    <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-[#bddbd1]/80 rounded-full mb-2">
-                      {getSpecialtyLabel(product.specialty)}
-                    </span>
-                  )}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {product.gamme && (
+                      <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
+                        {getGammeLabel(product.gamme)}
+                      </span>
+                    )}
+                    {product.specialty && (
+                      <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-[#bddbd1]/80 rounded-full">
+                        {getSpecialtyLabel(product.specialty)}
+                      </span>
+                    )}
+                  </div>
                   <h3 className="text-xl font-semibold text-[#02445b] mb-2 group-hover:text-[#02445b] transition-colors">
                     {product.name}
                   </h3>

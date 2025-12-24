@@ -40,7 +40,7 @@ export const getTranslationsByCategory = cache(
       select: { key: true, value: true },
     });
 
-    return translations.reduce((acc, t) => {
+    return translations.reduce((acc: TranslationCache, t: any) => {
       acc[t.key] = t.value;
       return acc;
     }, {} as TranslationCache);

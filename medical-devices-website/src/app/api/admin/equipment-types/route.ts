@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import type { ApiResponse } from '@/types';
+import { translateService } from '@/lib/translation/libretranslate';
+import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 
 export async function GET(req: NextRequest) {
   try {
@@ -20,7 +22,7 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { order: 'asc' },
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: equipmentTypes,
@@ -37,19 +39,39 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
-    
+
     const body = await req.json();
+
+    // Process translations and auto-fill missing locales
+    const { localizedData } = await translateService.processEquipmentTypeContent(body);
+
+    // Prepare the main data using the default locale (English)
+    const mainDetails = localizedData[DEFAULT_LOCALE] || localizedData[Object.keys(localizedData)[0]] || body;
+
     const equipmentType = await prisma.equipmentType.create({
       data: {
-        ...body,
+        name: mainDetails.name || body.name,
+        slug: body.slug,
+        description: mainDetails.description || body.description,
+        iconUrl: body.iconUrl,
+        heroImageUrl: body.heroImageUrl,
+        heroImageAlt: body.heroImageAlt,
         order: body.order ?? 0,
         isActive: body.isActive ?? true,
+        brandId: body.brandId,
+        translations: {
+          create: Object.entries(localizedData).map(([locale, content]) => ({
+            locale,
+            name: content.name || body.name,
+            description: content.description,
+          })),
+        },
       },
       include: {
         brand: true,
       },
     });
-    
+
     return NextResponse.json<ApiResponse>(
       { success: true, data: equipmentType, message: 'Equipment type created successfully' },
       { status: 201 }

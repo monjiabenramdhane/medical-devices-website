@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { translateService } from '@/lib/translation/libretranslate';
-import { SUPPORTED_LOCALES } from '@/lib/i18n/types';
+import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 import type { ApiResponse } from '@/types';
 
 export async function GET(req: NextRequest) {
@@ -31,12 +31,21 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { productIds, brandIds, ...data } = body;
 
-    // Process translations
+    // Process translations and auto-fill missing locales
     const { localizedData } = await translateService.processHomeSectionContent(data);
+
+    // Prepare the main data using the default locale (English)
+    const mainDetails = localizedData[DEFAULT_LOCALE] || localizedData[Object.keys(localizedData)[0]] || data;
 
     const section = await prisma.homeSection.create({
       data: {
         ...data,
+        title: mainDetails.title || data.title,
+        subtitle: mainDetails.subtitle || data.subtitle,
+        content: mainDetails.content || data.content || '',
+        ctaText: mainDetails.ctaText || data.ctaText,
+        imageUrl: mainDetails.imageUrl || data.imageUrl,
+        imageAlt: mainDetails.imageAlt || data.imageAlt,
         order: data.order ?? 0,
         isActive: data.isActive ?? true,
         // Connect relations if IDs are provided
@@ -48,16 +57,16 @@ export async function POST(req: NextRequest) {
         } : undefined,
         // Create translations
         home_section_translations: {
-          create: SUPPORTED_LOCALES.map(locale => ({
-            id: crypto.randomUUID(), // Manual ID generation
+          create: Object.entries(localizedData).map(([locale, content]) => ({
+            id: crypto.randomUUID(), // Keep manual ID generation as per existing code
             locale,
-            title: localizedData[locale].title || data.title,
-            subtitle: localizedData[locale].subtitle || data.subtitle,
-            content: localizedData[locale].content || data.content || '',
-            ctaText: localizedData[locale].ctaText || data.ctaText,
-            imageUrl: localizedData[locale].imageUrl || data.imageUrl,
-            imageAlt: localizedData[locale].imageAlt || data.imageAlt,
-            updatedAt: new Date(), // Manual timestamp to bypass Prisma Client stale schema issue
+            title: content.title || data.title,
+            subtitle: content.subtitle || data.subtitle,
+            content: content.content || data.content || '',
+            ctaText: content.ctaText || data.ctaText,
+            imageUrl: content.imageUrl || data.imageUrl,
+            imageAlt: content.imageAlt || data.imageAlt,
+            updatedAt: new Date(), // Keep manual timestamp
           })),
         }
       },

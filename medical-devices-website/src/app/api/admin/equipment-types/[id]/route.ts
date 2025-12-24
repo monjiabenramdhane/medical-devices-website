@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import type { ApiResponse } from '@/types';
+import { translateService } from '@/lib/translation/libretranslate';
+import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 
 export async function GET(
   req: NextRequest,
@@ -48,12 +50,46 @@ export async function PUT(
     const { id } = await context.params;
 
     const body = await req.json();
+
+    // Process translations and auto-fill missing locales
+    const { localizedData } = await translateService.processEquipmentTypeContent(body);
+
+    // Prepare the main data using the default locale (English)
+    const mainDetails = localizedData[DEFAULT_LOCALE] || localizedData[Object.keys(localizedData)[0]] || body;
+
+    // Preparation for translation update
+    const translationsData = Object.entries(localizedData).map(([locale, content]) => ({
+      equipmentTypeId: id,
+      locale,
+      name: content.name || body.name,
+      description: content.description,
+    }));
+
     const equipmentType = await prisma.equipmentType.update({
       where: { id },
-      data: body,
+      data: {
+        name: mainDetails.name || body.name,
+        slug: body.slug,
+        description: mainDetails.description || body.description,
+        iconUrl: body.iconUrl,
+        heroImageUrl: body.heroImageUrl,
+        heroImageAlt: body.heroImageAlt,
+        order: body.order,
+        isActive: body.isActive,
+        brandId: body.brandId,
+      },
       include: {
         brand: true,
       },
+    });
+
+    // Update translations: delete and recreate
+    await prisma.equipmentTypeTranslation.deleteMany({
+      where: { equipmentTypeId: id },
+    });
+
+    await prisma.equipmentTypeTranslation.createMany({
+      data: translationsData,
     });
 
     return NextResponse.json<ApiResponse>({

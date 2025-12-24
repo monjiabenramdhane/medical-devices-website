@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import type { ApiResponse } from '@/types';
+import { translateService } from '@/lib/translation/libretranslate';
+import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 
 export async function GET(
   req: NextRequest,
@@ -44,6 +46,7 @@ export async function GET(
   }
 }
 
+
 export async function PUT(
   req: NextRequest,
   context: { params: Promise<{ id: string }> }
@@ -53,10 +56,32 @@ export async function PUT(
     const { id } = await context.params;
 
     const body = await req.json();
+
+    // Process translations and auto-fill missing locales
+    const { localizedData } = await translateService.processSeriesContent(body);
+
+    // Prepare the main data using the default locale (English)
+    const mainDetails = localizedData[DEFAULT_LOCALE] || localizedData[Object.keys(localizedData)[0]] || body;
+
+    // Preparation for translation update
+    const translationsData = Object.entries(localizedData).map(([locale, content]) => ({
+      seriesId: id,
+      locale,
+      name: content.name || body.name,
+      description: content.description,
+      imageAlt: content.imageAlt,
+    }));
+
     const series = await prisma.series.update({
       where: { id },
       data: {
-        ...body,
+        name: mainDetails.name || body.name,
+        slug: body.slug,
+        description: mainDetails.description || body.description,
+        imageUrl: body.imageUrl,
+        imageAlt: mainDetails.imageAlt || body.imageAlt,
+        order: body.order,
+        isActive: body.isActive,
         subcategoryId: body.subcategoryId || null,
       },
       include: {
@@ -70,6 +95,15 @@ export async function PUT(
           },
         },
       },
+    });
+
+    // Update translations: delete and recreate
+    await prisma.seriesTranslation.deleteMany({
+      where: { seriesId: id },
+    });
+
+    await prisma.seriesTranslation.createMany({
+      data: translationsData,
     });
 
     return NextResponse.json<ApiResponse>({

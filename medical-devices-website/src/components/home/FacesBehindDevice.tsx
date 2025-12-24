@@ -1,6 +1,5 @@
-
 import { HomeSection } from '@prisma/client';
-import { ImageWithFallback } from '@/components/common/ImageWithFallback';
+import Image from 'next/image';
 import Link from 'next/link';
 
 interface FacesBehindDeviceProps {
@@ -26,7 +25,7 @@ export function FacesBehindDevice({ data }: FacesBehindDeviceProps) {
     imageUrl: "/images/about-building.jpg",
     imageAlt: "Medical Devices Group headquarters",
     ctaText: "Meet Our Team",
-    ctaLink: "/about",
+    ctaLink: "/",
   };
 
   const content = {
@@ -39,34 +38,39 @@ export function FacesBehindDevice({ data }: FacesBehindDeviceProps) {
   };
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
-          <div>
-            <h2 className="text-3xl font-bold text-[#02445b]  sm:text-4xl mb-6">
+          <div className="relative z-10">
+            <h2 className="text-3xl font-bold text-[#02445b] sm:text-4xl mb-6">
               {content.title}
             </h2>
             <div 
-              className="prose prose-lg text-gray-600 mb-8"
+              className="prose prose-lg text-gray-600 mb-8 max-w-none"
               dangerouslySetInnerHTML={{ __html: content.htmlContent }}
             />
             {content.ctaLink && content.ctaText && (
               <Link
                 href={content.ctaLink}
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-all shadow-md hover:shadow-lg"
               >
                 {content.ctaText}
               </Link>
             )}
           </div>
-          <div className="mt-10 lg:mt-0">
-            {content.imageUrl && (
-              <ImageWithFallback
+          <div className="mt-10 lg:mt-0 relative">
+            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+              <Image
                 src={content.imageUrl}
                 alt={content.imageAlt || content.title}
-                className="rounded-lg shadow-xl"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
-            )}
+            </div>
+            {/* Decors */}
+            <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-[#bddbd1]/30 rounded-full -z-10 blur-2xl" />
+            <div className="absolute -top-6 -left-6 w-24 h-24 bg-blue-100 rounded-full -z-10 blur-xl" />
           </div>
         </div>
       </div>

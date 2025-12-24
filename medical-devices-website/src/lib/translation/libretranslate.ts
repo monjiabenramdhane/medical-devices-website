@@ -11,7 +11,28 @@ interface DetectLanguageResult {
     language: string;
 }
 
-// Fields that should be translated for a Product
+interface ProcessContentConfig {
+    data: Record<string, any>;
+    translatableFields: readonly string[];
+    detectionFields?: readonly string[];
+    skipTranslationFields?: readonly string[];
+    copyAsIsFields?: readonly string[];
+}
+
+// Model-specific translatable field configurations
+export const MODEL_TRANSLATABLE_FIELDS = {
+    HERO_SLIDE: ['title', 'subtitle', 'description', 'ctaText'],
+    HOME_SECTION: ['title', 'subtitle', 'content', 'ctaText', 'imageAlt'],
+    BRAND: ['name', 'description', 'metaTitle', 'metaDescription'],
+    EQUIPMENT_TYPE: ['name', 'description'],
+    SUBCATEGORY: ['name', 'description', 'heroImageAlt'],
+    SERIES: ['name', 'description', 'imageAlt'],
+    PRODUCT: ['name', 'shortDescription', 'fullDescription', 'metaTitle', 'metaDescription', 'heroImageAlt', 'metaKeywords'],
+    PRODUCT_SECTION: ['title', 'content', 'imageAlt'],
+    PRODUCT_SPECIFICATION: ['category', 'name', 'value']
+} as const;
+
+// Fields that should be translated for a Product (backward compatibility)
 const TRANSLATABLE_FIELDS = [
     'shortDescription',
     'fullDescription',
@@ -51,7 +72,6 @@ class LibreTranslateService {
             const detected = data[0]?.language;
 
             // Only accept supported locales, or default to English
-            // Ideally we would map similar languages (e.g. 'en-US' -> 'en'), but LibreTranslate usually returns 2-char codes
             const isSupported = SUPPORTED_LOCALES.includes(detected as any);
             return isSupported ? (detected as Locale) : DEFAULT_LOCALE;
         } catch (error) {
@@ -94,12 +114,29 @@ class LibreTranslateService {
     }
 
     /**
-     * Processes product data: detects source language and auto-fills missing translations.
-     * Returns an object containing the data organized by locale.
+     * Generic content processing method that handles translation for any model.
+     * Detects source language and auto-fills missing translations for all supported locales.
      */
-    async processProductContent(data: Record<string, any>) {
-        // 1. Identify text to trigger detection (ignore name for translation)
-        const detectionText = data.shortDescription || data.fullDescription || '';
+    async processContent({
+        data,
+        translatableFields,
+        detectionFields,
+        skipTranslationFields = [],
+        copyAsIsFields = []
+    }: ProcessContentConfig): Promise<{
+        sourceLang: Locale;
+        localizedData: Record<string, Record<string, any>>;
+    }> {
+        // 1. Identify text to trigger detection
+        const fieldsForDetection = detectionFields || translatableFields;
+        let detectionText = '';
+
+        for (const field of fieldsForDetection) {
+            if (data[field] && typeof data[field] === 'string' && data[field].trim()) {
+                detectionText = data[field];
+                break;
+            }
+        }
 
         // Default to DEFAULT_LOCALE if no text
         let sourceLang: Locale = DEFAULT_LOCALE;
@@ -114,25 +151,37 @@ class LibreTranslateService {
         // Initialize results for all supported locales
         for (const locale of SUPPORTED_LOCALES) {
             results[locale] = {};
-
-            // Always copy the name as-is for every locale
-            results[locale]['name'] = data.name || '';
         }
 
-        // 2. Fill the source language data with current input for translatable fields
-        TRANSLATABLE_FIELDS.forEach(field => {
+        // 2. Fill the source language data with current input
+        translatableFields.forEach(field => {
             if (data[field] !== undefined) {
                 results[sourceLang][field] = data[field];
             }
         });
 
-        // 3. Translate to other locales (skip sourceLang)
+        // Copy fields that should be the same across all locales
+        copyAsIsFields.forEach(field => {
+            if (data[field] !== undefined) {
+                for (const locale of SUPPORTED_LOCALES) {
+                    results[locale][field] = data[field];
+                }
+            }
+        });
+
+        // 3. Translate to other locales
         for (const targetLang of SUPPORTED_LOCALES) {
             if (targetLang === sourceLang) continue;
 
-            for (const field of TRANSLATABLE_FIELDS) {
+            for (const field of translatableFields) {
                 const sourceText = data[field];
-                if (sourceText) {
+
+                if (!sourceText) continue;
+
+                // Skip translation for specific fields (e.g., URLs)
+                if (skipTranslationFields.includes(field)) {
+                    results[targetLang][field] = sourceText;
+                } else {
                     const translated = await this.translate({
                         text: sourceText,
                         sourceLang,
@@ -149,72 +198,109 @@ class LibreTranslateService {
         };
     }
 
-    async processHomeSectionContent(data: Record<string, any>) {
-        const TRANSLATABLE_HOME_FIELDS = [
-            'title',
-            'subtitle',
-            'content',
-            'ctaText',
-            'imageUrl',
-            'imageAlt'
-        ] as const;
-
-        // 1. Identify text to trigger detection
-        const detectionText = data.content || data.subtitle || data.title || '';
-
-        // Default to DEFAULT_LOCALE if no text
-        let sourceLang: Locale = DEFAULT_LOCALE;
-        if (detectionText) {
-            sourceLang = await this.detectLanguage(detectionText);
-        }
-
-        const results: Record<string, Record<string, any>> = {};
-
-        // Initialize results for all supported locales
-        for (const locale of SUPPORTED_LOCALES) {
-            results[locale] = {};
-        }
-
-        // 2. Fill the source language data with current input
-        TRANSLATABLE_HOME_FIELDS.forEach(field => {
-            if (data[field] !== undefined) {
-                results[sourceLang][field] = data[field];
-            }
+    /**
+     * Process HeroSlide content
+     */
+    async processHeroSlideContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.HERO_SLIDE,
+            detectionFields: ['description', 'subtitle', 'title']
         });
-
-        // 3. Translate to other locales
-        for (const targetLang of SUPPORTED_LOCALES) {
-            if (targetLang === sourceLang) continue;
-
-            for (const field of TRANSLATABLE_HOME_FIELDS) {
-                const sourceText = data[field];
-                // URLs usually don't need translation unless specific logic, but copying is good.
-                // Text fields get translated.
-                if (sourceText) {
-                    if (field === 'imageUrl' || field === 'title' && !data.title) {
-                        // Skip if needed logic
-                    }
-
-                    if (field === 'imageUrl') {
-                        results[targetLang][field] = sourceText;
-                    } else {
-                        const translated = await this.translate({
-                            text: sourceText,
-                            sourceLang,
-                            targetLang,
-                        });
-                        results[targetLang][field] = translated;
-                    }
-                }
-            }
-        }
-
-        return {
-            sourceLang,
-            localizedData: results
-        };
     }
 
+    /**
+     * Process HomeSection content
+     */
+    async processHomeSectionContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.HOME_SECTION,
+            detectionFields: ['content', 'subtitle', 'title'],
+            skipTranslationFields: ['imageUrl']
+        });
+    }
+
+    /**
+     * Process Brand content
+     */
+    async processBrandContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.BRAND,
+            detectionFields: ['description', 'name']
+        });
+    }
+
+    /**
+     * Process EquipmentType content
+     */
+    async processEquipmentTypeContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.EQUIPMENT_TYPE,
+            detectionFields: ['description', 'name']
+        });
+    }
+
+    /**
+     * Process Subcategory content
+     */
+    async processSubcategoryContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.SUBCATEGORY,
+            detectionFields: ['description', 'name']
+        });
+    }
+
+    /**
+     * Process Series content
+     */
+    async processSeriesContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.SERIES,
+            detectionFields: ['description', 'name']
+        });
+    }
+
+    /**
+     * Process Product content
+     */
+    async processProductContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.PRODUCT,
+            detectionFields: ['shortDescription', 'fullDescription', 'name']
+        });
+    }
+
+    /**
+     * Process ProductSection content
+     */
+    async processProductSectionContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.PRODUCT_SECTION,
+            detectionFields: ['content', 'title']
+        });
+    }
+
+    /**
+     * Process ProductSpecification content
+     */
+    async processProductSpecificationContent(data: Record<string, any>) {
+        return this.processContent({
+            data,
+            translatableFields: MODEL_TRANSLATABLE_FIELDS.PRODUCT_SPECIFICATION,
+            detectionFields: ['value', 'name']
+        });
+    }
+    
+    /**
+     * Simple auto-translate helper for two-language scenarios (backward compatibility)
+     */
     async autoTranslate(
         enText: string | null | undefined,
         frText: string | null | undefined

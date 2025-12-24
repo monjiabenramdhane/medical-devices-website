@@ -304,7 +304,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
           </p>
           <div className="flex justify-center gap-4">
             <Link
-              href="/contact"
+              href="/"
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
             >
               {t('ui.contactUs', 'Contact Us')}

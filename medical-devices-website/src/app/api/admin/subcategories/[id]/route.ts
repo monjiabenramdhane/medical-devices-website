@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import type { ApiResponse } from '@/types';
+import { translateService } from '@/lib/translation/libretranslate';
+import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 
 export async function GET(
   req: NextRequest,
@@ -49,9 +51,34 @@ export async function PUT(
     const { id } = await context.params;
 
     const body = await req.json();
+
+    // Process translations and auto-fill missing locales
+    const { localizedData } = await translateService.processSubcategoryContent(body);
+
+    // Prepare the main data using the default locale (English)
+    const mainDetails = localizedData[DEFAULT_LOCALE] || localizedData[Object.keys(localizedData)[0]] || body;
+
+    // Preparation for translation update
+    const translationsData = Object.entries(localizedData).map(([locale, content]) => ({
+      subcategoryId: id,
+      locale,
+      name: content.name || body.name,
+      description: content.description,
+      heroImageAlt: content.heroImageAlt,
+    }));
+
     const subcategory = await prisma.subcategory.update({
       where: { id },
-      data: body,
+      data: {
+        name: mainDetails.name || body.name,
+        slug: body.slug,
+        description: mainDetails.description || body.description,
+        heroImageUrl: body.heroImageUrl,
+        heroImageAlt: mainDetails.heroImageAlt || body.heroImageAlt,
+        order: body.order,
+        isActive: body.isActive,
+        equipmentTypeId: body.equipmentTypeId,
+      },
       include: {
         equipmentType: {
           include: {
@@ -59,6 +86,15 @@ export async function PUT(
           },
         },
       },
+    });
+
+    // Update translations: delete and recreate
+    await prisma.subcategoryTranslation.deleteMany({
+      where: { subcategoryId: id },
+    });
+
+    await prisma.subcategoryTranslation.createMany({
+      data: translationsData,
     });
 
     return NextResponse.json<ApiResponse>({

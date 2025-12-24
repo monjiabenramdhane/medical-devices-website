@@ -55,29 +55,8 @@ export function HeaderClient({ translations }: HeaderClientProps) {
             >
               {t('nav.products', 'Products')}
             </Link>
-            
-            <div className="relative group">
-              <button className="flex items-center text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors">
-                {t('nav.services', 'Services')}
-                <ChevronDown className="ml-1 h-4 w-4" />
-              </button>
-              {/* Dropdown menu would go here */}
-            </div>
 
-            <Link
-              href="/about"
-              className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
-            >
-              {t('nav.about', 'About Us')}
-            </Link>
-
-            <Link
-              href="/contact"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-3xl text-white bg-[#02445b] hover:bg-[#02445b]/90 transition-colors"
-            >
-              {t('nav.contact', 'Contact')}
-            </Link>
-
+  
             {isAdmin && (
               <Link
                 href="/admin"
@@ -121,27 +100,6 @@ export function HeaderClient({ translations }: HeaderClientProps) {
               >
                 {t('nav.products', 'Products')}
               </Link>
-              <Link
-                href="/services"
-                className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Services
-              </Link>
-              <Link
-                href="/research"
-                className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Research
-              </Link>
-              <Link
-                href="/about"
-                className="text-base font-medium text-gray-700 hover:text-[#02445b] transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t('nav.about', 'About Us')}
-              </Link>
               {isAdmin && (
                 <Link
                   href="/admin"
@@ -152,7 +110,7 @@ export function HeaderClient({ translations }: HeaderClientProps) {
                 </Link>
               )}
               <Link
-                href="/contact"
+                href="/"
                 className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#02445b] hover:bg-blue-700 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >

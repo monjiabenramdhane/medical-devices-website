@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import type { ApiResponse } from '@/types';
+import { translateService } from '@/lib/translation/libretranslate';
+import { DEFAULT_LOCALE } from '@/lib/i18n/types';
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,7 +23,7 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { order: 'asc' },
     });
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: subcategories,
@@ -38,13 +40,33 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
-    
+
     const body = await req.json();
+
+    // Process translations and auto-fill missing locales
+    const { localizedData } = await translateService.processSubcategoryContent(body);
+
+    // Prepare the main data using the default locale (English)
+    const mainDetails = localizedData[DEFAULT_LOCALE] || localizedData[Object.keys(localizedData)[0]] || body;
+
     const subcategory = await prisma.subcategory.create({
       data: {
-        ...body,
+        name: mainDetails.name || body.name,
+        slug: body.slug,
+        description: mainDetails.description || body.description,
+        heroImageUrl: body.heroImageUrl,
+        heroImageAlt: mainDetails.heroImageAlt || body.heroImageAlt,
         order: body.order ?? 0,
         isActive: body.isActive ?? true,
+        equipmentTypeId: body.equipmentTypeId,
+        translations: {
+          create: Object.entries(localizedData).map(([locale, content]) => ({
+            locale,
+            name: content.name || body.name,
+            description: content.description,
+            heroImageAlt: content.heroImageAlt,
+          })),
+        },
       },
       include: {
         equipmentType: {
@@ -54,7 +76,7 @@ export async function POST(req: NextRequest) {
         },
       },
     });
-    
+
     return NextResponse.json<ApiResponse>(
       { success: true, data: subcategory, message: 'Subcategory created successfully' },
       { status: 201 }

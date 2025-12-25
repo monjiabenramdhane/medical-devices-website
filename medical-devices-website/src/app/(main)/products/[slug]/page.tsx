@@ -51,7 +51,8 @@ export async function generateMetadata({ params }: ProductSlugPageProps): Promis
   };
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
+export const experimental_ppr = true;
 
 export default async function ProductSlugPage({ params }: ProductSlugPageProps) {
   const { slug } = await params;

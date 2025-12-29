@@ -29,7 +29,8 @@ export async function generateMetadata({ params }: EquipmentTypePageProps): Prom
   });
 }
 
-export const dynamic = 'force-dynamic';
+export const experimental_ppr = true;
+export const revalidate = 30;
 
 export default async function EquipmentTypePage({ params }: EquipmentTypePageProps) {
   const { brandSlug, equipmentSlug: equipmentTypeSlug } = await params;

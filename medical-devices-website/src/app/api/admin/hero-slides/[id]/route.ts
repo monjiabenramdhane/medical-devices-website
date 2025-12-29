@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { HeroSlideService } from '@/services/heroSlide.service';
 import type { ApiResponse } from '@/types';
@@ -42,6 +43,9 @@ export async function PUT(
     const body = await req.json();
     const slide = await HeroSlideService.update(id, body);
 
+    // Revalidate cache
+    revalidateTag('hero');
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: slide,
@@ -65,6 +69,9 @@ export async function DELETE(
     await requireAdmin();
 
     await HeroSlideService.delete(id);
+
+    // Revalidate cache
+    revalidateTag('hero');
 
     return NextResponse.json<ApiResponse>({
       success: true,

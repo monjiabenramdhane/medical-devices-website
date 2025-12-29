@@ -1,28 +1,32 @@
 import { prisma } from '@/lib/prisma';
-import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import type { Product, CreateProductInput, UpdateProductInput, Gamme, Specialty } from '@/types';
 
 // Cached version of getFeatured with ISR revalidation
 // Optimized to reduce payload by omitting heavy fields
-const getCachedFeaturedProducts = cache(async (limit: number) => {
-  return prisma.product.findMany({
-    where: {
-      isFeatured: true,
-      isActive: true,
-    },
-    include: {
-      brand: {
-        select: { id: true, name: true, slug: true },
+const getCachedFeaturedProducts = unstable_cache(
+  async (limit: number) => {
+    return prisma.product.findMany({
+      where: {
+        isFeatured: true,
+        isActive: true,
       },
-      equipmentType: {
-        select: { id: true, name: true },
+      include: {
+        brand: {
+          select: { id: true, name: true, slug: true },
+        },
+        equipmentType: {
+          select: { id: true, name: true },
+        },
+        // Omit: gallery, subcategory, series, fullDescription, specifications
       },
-      // Omit: gallery, subcategory, series, fullDescription, specifications
-    },
-    orderBy: { order: 'asc' },
-    take: limit,
-  });
-});
+      orderBy: { order: 'asc' },
+      take: limit,
+    });
+  },
+  ['featured-products'],
+  { tags: ['products'] }
+);
 
 export class ProductService {
   static async getAll(filters?: {

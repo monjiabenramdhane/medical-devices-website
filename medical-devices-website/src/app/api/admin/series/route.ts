@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { translateService } from '@/lib/translation/libretranslate';
@@ -84,6 +85,12 @@ export async function POST(req: NextRequest) {
         },
       },
     });
+
+    // Revalidate cache
+    revalidateTag('series');
+    revalidateTag('subcategories');
+    revalidateTag('equipment-types');
+    revalidateTag('brands');
 
     return NextResponse.json<ApiResponse>(
       { success: true, data: series, message: 'Series created successfully' },

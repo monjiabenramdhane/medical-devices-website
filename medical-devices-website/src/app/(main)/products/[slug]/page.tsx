@@ -6,6 +6,7 @@ import { getLocalizedProduct } from '@/lib/i18n/localized-product-service';
 import { getLocale } from '@/lib/i18n/locale-resolver';
 import { getTranslation, getTranslationsByCategory } from '@/lib/i18n/translation-service';
 import { headers } from 'next/headers';
+import ProductHeroSection from '@/components/products/ProductSection';
 
 interface ProductSlugPageProps {
   params: Promise<{
@@ -58,19 +59,23 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
   const { slug } = await params;
   const locale = await getLocale();
   
-  const [product, uiTranslations, specialtyTranslations] = await Promise.all([
+  const [product, uiTranslations, navigationTranslations, specialtyTranslations ] = await Promise.all([
     getLocalizedProduct(slug, locale),
     getTranslationsByCategory(locale, 'ui'),
+    getTranslationsByCategory(locale, 'navigation'),
     getTranslationsByCategory(locale, 'specialty'),
   ]);
-
   if (!product) {
     notFound();
   }
 
   const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
-  const tGamme = (val: string) => uiTranslations[`ui.gamme.${val.toLowerCase()}`] || val;
-  const tSpecialty = (val: string) => specialtyTranslations[`specialty.${val.toLowerCase()}`] || val;
+  const tNav = (key: string, fallback: string) => navigationTranslations[key] || fallback;
+   // Compute current URL for SEO and hydration stability
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3000';
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const currentUrl = `${protocol}://${host}/products/${slug}`;
 
   return (
     <div className="bg-white">
@@ -80,7 +85,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
           <ol className="flex items-center space-x-2 text-sm">
             <li>
               <Link href="/" className="text-gray-500 hover:text-gray-700">
-                {t('nav.home', 'Home')}
+                {tNav('nav.home', 'Home')}
               </Link>
 
               
@@ -88,7 +93,7 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
             <ChevronRight className="h-4 w-4 text-gray-400" />
             <li>
               <Link href="/products" className="text-gray-500 hover:text-gray-700">
-                {t('nav.products', 'Products')}
+                {tNav('nav.products', 'Products')}
               </Link>
             </li>
             {product.brand && (
@@ -112,118 +117,12 @@ export default async function ProductSlugPage({ params }: ProductSlugPageProps) 
         </div>
       </nav>
 
-      {/* Product Hero */}
-      <section className="py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-start">
-            {/* Image Gallery */}
-            <div>
-              <div className="aspect-w-4 aspect-h-3 bg-gray-200 rounded-lg overflow-hidden mb-4">
-                <img
-                  src={product.heroImageUrl}
-                  alt={product.heroImageAlt}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {product.gallery && product.gallery.length > 0 && (
-                <div className="grid grid-cols-4 gap-4">
-                  {product.gallery.map((image) => (
-                    <button
-                      key={image.id}
-                      className="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden hover:opacity-75 transition-opacity"
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.alt || ''}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Product Info */}
-            <div>
-              {/* Badges */}
-              <div className="flex items-center gap-2 mb-4">
-                {product.gamme && (
-                  <span className="inline-block px-3 py-1 text-sm font-semibold text-[#02445b] bg-blue-100 rounded-full">
-                    {tGamme(product.gamme)}
-                  </span>
-                )}
-                {product.specialty && (
-                  <span className="inline-block px-3 py-1 text-sm font-semibold text-green-600 bg-green-100 rounded-full">
-                     {tSpecialty(product.specialty)}
-                  </span>
-                )}
-                {product.isFeatured && (
-                  <span className="inline-block px-3 py-1 text-sm font-semibold text-yellow-600 bg-yellow-100 rounded-full">
-                    {t('ui.featured', 'Featured')}
-                  </span>
-                )}
-              </div>
-
-              {/* Title */}
-              <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
-                {product.name}
-              </h1>
-
-              {/* Brand & Series */}
-              <div className="mb-6">
-                {product.brand && (
-                  <p className="text-lg text-gray-600 mb-2">
-                    {t('ui.by', 'by')}{' '}
-                    <Link
-                      href={`/brands/${product.brand.slug}`}
-                      className="text-[#02445b] hover:underline font-semibold"
-                    >
-                      {product.brand.name}
-                    </Link>
-                  </p>
-                )}
-                {product.seriesId && (
-                  <p className="text-sm text-gray-500">
-                    {t('ui.partOfSeries', 'Part of Series')}
-                  </p>
-                )}
-              </div>
-
-              {/* Short Description */}
-              {product.shortDescription && (
-                <p className="text-lg text-gray-700 mb-6">
-                  {product.shortDescription}
-                </p>
-              )}
-
-              {/* Full Description */}
-              {product.fullDescription && (
-                <div className="prose prose-lg text-gray-700 mb-8">
-                  <p>{product.fullDescription}</p>
-                </div>
-              )}
-
-              {/* CTAs */}
-              <div className="flex flex-wrap gap-4 mb-8">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
-                >
-                  {t('ui.requestQuote', 'Request Quote')}
-                </a>
-                {product.specifications && product.specifications.length > 0 && (
-                  <a
-                    href="#specifications"
-                    className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                  >
-                    {t('ui.viewSpecs', 'View Specifications')}
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ProductHeroSection
+        product={product}
+        uiTranslations={uiTranslations}
+        specialtyTranslations={specialtyTranslations}
+        currentUrl={currentUrl}
+      />
 
       {/* Product Sections */}
       {product.sections && product.sections.length > 0 && (

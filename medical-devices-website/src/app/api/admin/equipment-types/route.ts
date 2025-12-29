@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import type { ApiResponse } from '@/types';
@@ -71,6 +72,10 @@ export async function POST(req: NextRequest) {
         brand: true,
       },
     });
+
+    // Revalidate cache
+    revalidateTag('equipment-types');
+    revalidateTag('brands');
 
     return NextResponse.json<ApiResponse>(
       { success: true, data: equipmentType, message: 'Equipment type created successfully' },

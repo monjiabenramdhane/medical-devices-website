@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import type { ApiResponse } from '@/types';
@@ -97,6 +98,11 @@ export async function PUT(
       data: translationsData,
     });
 
+    // Revalidate cache
+    revalidateTag('subcategories');
+    revalidateTag('equipment-types');
+    revalidateTag('brands');
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: subcategory,
@@ -122,6 +128,11 @@ export async function DELETE(
     await prisma.subcategory.delete({
       where: { id },
     });
+
+    // Revalidate cache
+    revalidateTag('subcategories');
+    revalidateTag('equipment-types');
+    revalidateTag('brands');
 
     return NextResponse.json<ApiResponse>({
       success: true,

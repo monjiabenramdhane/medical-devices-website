@@ -30,7 +30,8 @@ export async function generateMetadata({ params }: SubcategoryPageProps): Promis
   });
 }
 
-export const dynamic = 'force-dynamic';
+export const experimental_ppr = true;
+export const revalidate = 30;
 
 export default async function SubcategoryPage({ params }: SubcategoryPageProps) {
   const { brandSlug, equipmentSlug: equipmentTypeSlug, subcategorySlug } = await params;

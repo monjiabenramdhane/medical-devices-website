@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { HeroSlideService } from '@/services/heroSlide.service';
 import type { ApiResponse } from '@/types';
@@ -6,7 +7,7 @@ import type { ApiResponse } from '@/types';
 export async function GET(req: NextRequest) {
   try {
     const slides = await HeroSlideService.getAll();
-    
+
     return NextResponse.json<ApiResponse>({
       success: true,
       data: slides,
@@ -23,10 +24,13 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     await requireAdmin();
-    
+
     const body = await req.json();
     const slide = await HeroSlideService.create(body);
-    
+
+    // Revalidate cache
+    revalidateTag('hero');
+
     return NextResponse.json<ApiResponse>(
       { success: true, data: slide, message: 'Hero slide created successfully' },
       { status: 201 }

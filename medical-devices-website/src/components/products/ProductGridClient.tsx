@@ -1,6 +1,4 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import { fetchFilteredProducts } from '@/app/actions/product-actions';
 import { ProductsSkeleton } from './ProductSkeletons';
 import { Gamme, Specialty } from '@prisma/client';
 import { type Locale } from '@/lib/i18n/types';
@@ -17,68 +15,23 @@ interface ProductGridClientProps {
 }
 
 export function ProductGridClient({
-  initialProducts,
-  initialTotal,
+  initialProducts: products,
+  initialTotal: totalCount,
   locale,
   selectedParams,
   translations
 }: ProductGridClientProps) {
-  const [products, setProducts] = useState(initialProducts);
-  const [totalCount, setTotalCount] = useState(initialTotal);
-  const [loading, setLoading] = useState(false);
-  const isMounted = useRef(false);
-
   const { ui: uiTranslations, specialty: specialtyTranslations } = translations;
   const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
   const tSpec = (key: string, fallback: string) => specialtyTranslations[key] || fallback;
   const tGamme = (val: Gamme) => t(`ui.gamme.${val.toLowerCase()}`, val);
   const tSpecialty = (val: Specialty) => tSpec(`specialty.${val.toLowerCase()}`, val);
 
-  // --- Cache côté client pour éviter les requêtes répétitives ---
-  const cacheRef = useRef<Map<string, any[]>>(new Map());
-  const cacheKey = JSON.stringify(selectedParams);
-
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-
-    async function fetchProducts() {
-      // Lecture depuis cache
-      if (cacheRef.current.has(cacheKey)) {
-        const cached = cacheRef.current.get(cacheKey)!;
-        setProducts(cached);
-        setTotalCount(cached.length);
-        return;
-      }
-
-      setLoading(true);
-      const result = await fetchFilteredProducts(locale, selectedParams);
-      setProducts(result);
-      setTotalCount(result.length);
-      setLoading(false);
-
-      // Stockage dans le cache côté client
-      cacheRef.current.set(cacheKey, result);
-
-      // Mise à jour des cookies pour persistance des filtres
-      document.cookie = `brand=${selectedParams.brand || ''}; path=/; max-age=${60*60*24*30}`;
-      document.cookie = `gamme=${selectedParams.gamme || ''}; path=/; max-age=${60*60*24*30}`;
-      document.cookie = `specialty=${selectedParams.specialty || ''}; path=/; max-age=${60*60*24*30}`;
-      document.cookie = `search=${selectedParams.search || ''}; path=/; max-age=${60*60*24*30}`;
-    }
-
-    fetchProducts();
-  }, [locale, cacheKey]);
-
-  if (loading) return <ProductsSkeleton totalCount={6} />;
-
   if (products.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
         <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-[#02445b] mb-2">{t('ui.noProductsFound', 'No products found')}</h3>
+        <h3 className="text-lg font-semibold text-[#02445b]">{t('ui.noProductsFound', 'No products found')}</h3>
         <p className="text-gray-600 mb-4">{t('ui.adjustFilters', 'Try adjusting your filters or search criteria')}</p>
         <Link
           href="/products"
@@ -113,8 +66,8 @@ export function ProductGridClient({
               <Link href={productUrl}>
                 <div className="aspect-w-16 aspect-h-9 bg-gray-200 relative">
                   <Image
-                    src={`/image?src=${encodeURIComponent(product.heroImageUrl)}`}
-                    alt={product.heroImageAlt}
+                    src={product.heroImageUrl}
+                    alt={product.heroImageAlt || 'Product image'}
                     width={800}
                     height={450}
                     className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"

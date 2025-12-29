@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { translateService } from '@/lib/translation/libretranslate';
@@ -121,6 +122,10 @@ export async function POST(req: NextRequest) {
         translations: true,
       },
     });
+
+    // Revalidate cache
+    revalidateTag('products');
+    revalidateTag('brands');
 
     return NextResponse.json<ApiResponse>(
       { success: true, data: completeProduct, message: 'Product created successfully' },

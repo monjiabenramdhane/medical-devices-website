@@ -17,7 +17,8 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export const dynamic = 'force-dynamic';
+export const experimental_ppr = true;
+export const revalidate = 30;
 
 export default async function BrandsPage() {
   const locale = await getLocale();

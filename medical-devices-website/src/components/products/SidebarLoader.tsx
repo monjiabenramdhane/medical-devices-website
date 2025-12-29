@@ -1,26 +1,25 @@
-import { ProductSidebar } from '@/components/products/ProductSidebar';
+import { ProductSidebar } from './ProductSidebar';
+import { TranslationCache } from '@/lib/i18n/types';
 
 interface SidebarLoaderProps {
-  brandsPromise: Promise<any[]>;
-  selectedParams: any;
-  uiTranslationsPromise: Promise<any>;
-  specialtyTranslationsPromise: Promise<any>;
+  brandsPromise: Promise<{ id: string; name: string; slug: string }[]>;
+  selectedParams: { brand?: string; gamme?: string; specialty?: string };
+  translationsPromise: Promise<[TranslationCache, TranslationCache]>;
 }
 
-export async function SidebarLoader({ 
-  brandsPromise, 
-  selectedParams, 
-  uiTranslationsPromise, 
-  specialtyTranslationsPromise 
+export async function SidebarLoader({
+  brandsPromise,
+  selectedParams,
+  translationsPromise,
 }: SidebarLoaderProps) {
-  const [brands, uiTranslations, specialtyTranslations] = await Promise.all([
+  // Wait for all promises together
+  const [brands, [uiTranslations, specialtyTranslations]] = await Promise.all([
     brandsPromise,
-    uiTranslationsPromise,
-    specialtyTranslationsPromise
+    translationsPromise,
   ]);
 
   return (
-    <ProductSidebar 
+    <ProductSidebar
       brands={brands}
       selectedParams={selectedParams}
       translations={{ ui: uiTranslations, specialty: specialtyTranslations }}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { requireAdmin } from '@/lib/auth-helpers';
 import { prisma } from '@/lib/prisma';
 import { translateService } from '@/lib/translation/libretranslate';
@@ -148,6 +149,11 @@ export async function PUT(
             },
         });
 
+        // Revalidate cache
+        revalidateTag('product');
+        revalidateTag('products');
+        revalidateTag('brands');
+
         return NextResponse.json<ApiResponse>({
             success: true,
             data: completeProduct,
@@ -175,6 +181,11 @@ export async function DELETE(
         await prisma.product.delete({
             where: { id },
         });
+
+        // Revalidate cache
+        revalidateTag('product');
+        revalidateTag('products');
+        revalidateTag('brands');
 
         return NextResponse.json<ApiResponse>({
             success: true,

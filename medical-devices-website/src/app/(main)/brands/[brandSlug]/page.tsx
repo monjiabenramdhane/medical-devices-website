@@ -28,7 +28,8 @@ export async function generateMetadata(props: BrandPageProps): Promise<Metadata>
   });
 }
 
-export const dynamic = 'force-dynamic';
+export const experimental_ppr = true;
+export const revalidate = 30;
 
 export default async function BrandPage(props: BrandPageProps) {
   const params = await props.params;

@@ -48,7 +48,8 @@ export async function generateMetadata({ params }: DynamicSlugPageProps): Promis
   return {};
 }
 
-export const dynamic = 'force-dynamic';
+export const experimental_ppr = true;
+export const revalidate = 30;
 
 export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) {
   const { brandSlug, equipmentSlug: equipmentTypeSlug, subcategorySlug, slug } = await params;

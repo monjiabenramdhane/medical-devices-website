@@ -20,7 +20,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [equipmentTypes, setEquipmentTypes] = useState<EquipmentType[]>([]);
   const [subcategories, setSubcategories] = useState<Subcategory[]>([]);
-  const [seriesList, setSeriesList] = useState<Series[]>([]);
+  // const [seriesList, setSeriesList] = useState<Series[]>([]);
 
   const [formData, setFormData] = useState<CreateProductInput & { gallery: GalleryImage[] }>({
     name: initialData?.name || '',
@@ -66,11 +66,11 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     }
   }, [formData.equipmentTypeId]);
 
-  useEffect(() => {
-    if (formData.subcategoryId) {
-      fetchSeries(formData.subcategoryId);
-    }
-  }, [formData.subcategoryId]);
+  // useEffect(() => {
+  //   if (formData.subcategoryId) {
+  //     fetchSeries(formData.subcategoryId);
+  //   }
+  // }, [formData.subcategoryId]);
 
   const fetchBrands = async () => {
     try {
@@ -102,15 +102,15 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
     }
   };
 
-  const fetchSeries = async (subcategoryId: string) => {
-    try {
-      const res = await fetch(`/api/admin/series?subcategoryId=${subcategoryId}`);
-      const data = await res.json();
-      setSeriesList(data.data || []);
-    } catch (err) {
-      console.error('Failed to fetch series:', err);
-    }
-  };
+  // const fetchSeries = async (subcategoryId: string) => {
+  //   try {
+  //     const res = await fetch(`/api/admin/series?subcategoryId=${subcategoryId}`);
+  //     const data = await res.json();
+  //     setSeriesList(data.data || []);
+  //   } catch (err) {
+  //     console.error('Failed to fetch series:', err);
+  //   }
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -216,7 +216,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold text-[#02445b]  mb-4">Product Hierarchy</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label htmlFor="brandId" className="block text-sm font-medium text-gray-700 mb-2">
               Brand *
@@ -225,7 +225,9 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
               id="brandId"
               required
               value={formData.brandId}
-              onChange={(e) => setFormData({ ...formData, brandId: e.target.value, equipmentTypeId: '', subcategoryId: '', seriesId: '' })}
+              onChange={(e) => setFormData({ ...formData, brandId: e.target.value, equipmentTypeId: '', subcategoryId: ''
+                // , seriesId: ''
+               })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">Select Brand</option>
@@ -244,7 +246,9 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
             <select
               id="equipmentTypeId"
               value={formData.equipmentTypeId}
-              onChange={(e) => setFormData({ ...formData, equipmentTypeId: e.target.value, subcategoryId: '', seriesId: '' })}
+              onChange={(e) => setFormData({ ...formData, equipmentTypeId: e.target.value, subcategoryId: ''
+                // , seriesId: ''
+               })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={!formData.brandId}
             >
@@ -264,7 +268,9 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
             <select
               id="subcategoryId"
               value={formData.subcategoryId}
-              onChange={(e) => setFormData({ ...formData, subcategoryId: e.target.value, seriesId: '' })}
+              onChange={(e) => setFormData({ ...formData, subcategoryId: e.target.value
+                //  ,seriesId: '' 
+                })}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled={!formData.equipmentTypeId}
             >
@@ -277,7 +283,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
             </select>
           </div>
 
-          <div>
+          {/* <div>
             <label htmlFor="seriesId" className="block text-sm font-medium text-gray-700 mb-2">
               Series (Optional)
             </label>
@@ -295,7 +301,7 @@ export function ProductForm({ initialData, isEdit = false }: ProductFormProps) {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
         </div>
       </div>
 

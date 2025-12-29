@@ -91,10 +91,10 @@ export function ProductGridClient({
                   {product.shortDescription && (
                     <p className="text-gray-600 text-sm line-clamp-3 mb-4">{product.shortDescription}</p>
                   )}
-                  {product.series && <p className="text-xs text-gray-500">Series: {product.series.name}</p>}
+                  {/* {product.series && <p className="text-xs text-gray-500">Series: {product.series.name}</p>}
                   <div className="mt-4 flex items-center text-[#02445b] font-medium group-hover:underline">
                     {t('ui.viewDetails', 'View Details')}
-                  </div>
+                  </div> */}
                 </div>
               </Link>
             </article>

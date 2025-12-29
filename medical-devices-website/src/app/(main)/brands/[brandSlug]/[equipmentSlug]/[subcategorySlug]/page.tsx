@@ -50,7 +50,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
   const tNav = (key: string, fallback: string) => nav[key] || fallback;
   const nfT = (key: string, fallback: string) => notFoundUi[key] || fallback;
 
-  const hasSeries = subcategory.series && subcategory.series.length > 0;
+  // const hasSeries = subcategory.series && subcategory.series.length > 0;
   const hasProducts = subcategory.products && subcategory.products.length > 0;
 
   return (
@@ -147,7 +147,7 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
       </nav>
 
       {/* Series Section */}
-      {hasSeries && (
+      {/* {hasSeries && (
         <section className="py-16 bg-gray-50">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
@@ -190,20 +190,21 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
             </div>
           </div>
         </section>
-      )}
+      )} */}
 
       {/* Products Section */}
       {hasProducts && (
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
-              {hasSeries ? t('ui.allProducts', 'All Products') : t('ui.products', 'Products')}
+              {/* {hasSeries ? t('ui.allProducts', 'All Products') : t('ui.products', 'Products')} */}
+             {t('ui.allProducts', 'All Products')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {subcategory.products.map((product) => (
                 <Link
                   key={product.id}
-                  href={`/products/${product.slug}`} // Note: changed to absolute product link as that's usually preferred for canonical
+                  href={`/brands/${brandSlug}/${equipmentTypeSlug}/${subcategorySlug}/${product.slug}`} // Note: changed to absolute product link as that's usually preferred for canonical
                   className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden"
                 >
                   <div className="aspect-w-16 aspect-h-9 bg-gray-200">
@@ -236,7 +237,8 @@ export default async function SubcategoryPage({ params }: SubcategoryPageProps) 
       )}
 
       {/* Empty State */}
-      {!hasSeries && !hasProducts && (
+      {/* {!hasSeries && !hasProducts && (*/}
+      { !hasProducts && ( 
         <section className="py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center py-12 bg-gray-50 rounded-lg">

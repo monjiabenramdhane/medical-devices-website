@@ -8,6 +8,8 @@ import { getTranslationsByCategory } from '@/lib/i18n/translation-service';
 import { generateMetadata as genMeta } from '@/lib/utils';
 import { ChevronRight, Package } from 'lucide-react';
 import type { Metadata } from 'next';
+import ProductHeroSection from '@/components/products/ProductSection';
+import { headers } from 'next/headers';
 
 interface DynamicSlugPageProps {
   params: Promise<{
@@ -59,189 +61,195 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
 
   const t = (key: string, fallback: string) => uiTranslations[key] || fallback;
 
-  const getGammeLabel = (gamme: string | undefined) => {
-    if (!gamme) return '';
-    return uiTranslations[`ui.gamme.${gamme.toLowerCase()}`] || gamme;
-  };
+  // const getGammeLabel = (gamme: string | undefined) => {
+  //   if (!gamme) return '';
+  //   return uiTranslations[`ui.gamme.${gamme.toLowerCase()}`] || gamme;
+  // };
 
-  const getSpecialtyLabel = (specialty: string | undefined) => {
-    if (!specialty) return '';
-    return specialtyTranslations[`specialty.${specialty.toLowerCase()}`] || specialty;
-  };
+  // const getSpecialtyLabel = (specialty: string | undefined) => {
+  //   if (!specialty) return '';
+  //   return specialtyTranslations[`specialty.${specialty.toLowerCase()}`] || specialty;
+  // };
 
   // Try to find as series first
-  const series = await getLocalizedSeries(brandSlug, equipmentTypeSlug, subcategorySlug, slug, locale);
+  // const series = await getLocalizedSeries(brandSlug, equipmentTypeSlug, subcategorySlug, slug, locale);
 
   // If found as series, render series page
-  if (series) {
-    const brand = series.subcategory.equipmentType.brand;
-    const equipmentType = series.subcategory.equipmentType;
-    const subcategory = series.subcategory;
-    const localizedSeriesProducts = series.products;
+  // if (series) {
+  //   const brand = series.subcategory.equipmentType.brand;
+  //   const equipmentType = series.subcategory.equipmentType;
+  //   const subcategory = series.subcategory;
+  //   const localizedSeriesProducts = series.products;
 
-    return (
-      <div className="bg-white">
-        {/* Series Header */}
-        <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
-              <div>
-                <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
-                  {series.name}
-                </h1>
-                <p className="text-lg text-gray-600 mb-6">
-                  {subcategory.name} •{' '}
-                  <Link
-                    href={`/brands/${brandSlug}`}
-                    className="text-[#02445b] hover:underline"
-                  >
-                    {brand.name}
-                  </Link>
-                </p>
-                {series.description && (
-                  <div className="prose prose-lg text-gray-700 mb-8">
-                    <p>{series.description}</p>
-                  </div>
-                )}
-                {localizedSeriesProducts.length > 0 && (
-                  <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
-                    <Package className="h-5 w-5 mr-2" />
-                    {localizedSeriesProducts.length} {localizedSeriesProducts.length === 1 ? t('ui.product', 'product') : t('ui.products', 'products')} {t('ui.inThisSeries', 'in this series')}
-                  </div>
-                )}
-              </div>
-              {series.imageUrl && (
-                <div className="mt-8 lg:mt-0">
-                  <img
-                    src={series.imageUrl}
-                    alt={series.imageAlt || series.name}
-                    className="rounded-lg shadow-xl"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-        {/* Breadcrumbs */}
-        <nav className="bg-gray-50 py-4" aria-label="Breadcrumb">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <ol className="flex items-center space-x-2 text-sm flex-wrap">
-              <li>
-                <Link href="/" className="text-gray-500 hover:text-gray-700">
-                  {t('nav.home', 'Home')}
-                </Link>
-              </li>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-              <li>
-                <Link href="/brands" className="text-gray-500 hover:text-gray-700">
-                  {t('nav.brands', 'Brands')}
-                </Link>
-              </li>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-              <li>
-                <Link
-                  href={`/brands/${brandSlug}`}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  {brand.name}
-                </Link>
-              </li>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-              <li>
-                <Link
-                  href={`/brands/${brandSlug}/${equipmentTypeSlug}`}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  {equipmentType.name}
-                </Link>
-              </li>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-              <li>
-                <Link
-                  href={`/brands/${brandSlug}/${equipmentTypeSlug}/${subcategorySlug}`}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  {subcategory.name}
-                </Link>
-              </li>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-              <li className="text-[#02445b]  font-medium" aria-current="page">
-                {series.name}
-              </li>
-            </ol>
-          </div>
-        </nav>
+  //   console.log(series);
 
-        {/* Products Grid */}
-        <section className="py-16">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
-              {t('ui.productsIn', 'Products in')} {series.name}
-            </h2>
+  //   return (
+  //     <div className="bg-white">
+  //       {/* Series Header */}
+  //       <section className="py-12 bg-gradient-to-br from-blue-50 to-white">
+  //         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  //           <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+  //             <div>
+  //               <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
+  //                 {series.name}
+  //               </h1>
+  //               <p className="text-lg text-gray-600 mb-6">
+  //                 {subcategory.name} •{' '}
+  //                 <Link
+  //                   href={`/brands/${brandSlug}`}
+  //                   className="text-[#02445b] hover:underline"
+  //                 >
+  //                   {brand.name}
+  //                 </Link>
+  //               </p>
+  //               {series.description && (
+  //                 <div className="prose prose-lg text-gray-700 mb-8">
+  //                   <p>{series.description}</p>
+  //                 </div>
+  //               )}
+  //               {localizedSeriesProducts.length > 0 && (
+  //                 <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
+  //                   <Package className="h-5 w-5 mr-2" />
+  //                   {localizedSeriesProducts.length} {localizedSeriesProducts.length === 1 ? t('ui.product', 'product') : t('ui.products', 'products')} {t('ui.inThisSeries', 'in this series')}
+  //                 </div>
+  //               )}
+  //             </div>
+  //             {series.imageUrl && (
+  //               <div className="mt-8 lg:mt-0">
+  //                 <img
+  //                   src={series.imageUrl}
+  //                   alt={series.imageAlt || series.name}
+  //                   className="rounded-lg shadow-xl"
+  //                 />
+  //               </div>
+  //             )}
+  //           </div>
+  //         </div>
+  //       </section>
+  //       {/* Breadcrumbs */}
+  //       <nav className="bg-gray-50 py-4" aria-label="Breadcrumb">
+  //         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  //           <ol className="flex items-center space-x-2 text-sm flex-wrap">
+  //             <li>
+  //               <Link href="/" className="text-gray-500 hover:text-gray-700">
+  //                 {t('nav.home', 'Home')}
+  //               </Link>
+  //             </li>
+  //             <ChevronRight className="h-4 w-4 text-gray-400" />
+  //             <li>
+  //               <Link href="/brands" className="text-gray-500 hover:text-gray-700">
+  //                 {t('nav.brands', 'Brands')}
+  //               </Link>
+  //             </li>
+  //             <ChevronRight className="h-4 w-4 text-gray-400" />
+  //             <li>
+  //               <Link
+  //                 href={`/brands/${brandSlug}`}
+  //                 className="text-gray-500 hover:text-gray-700"
+  //               >
+  //                 {brand.name}
+  //               </Link>
+  //             </li>
+  //             <ChevronRight className="h-4 w-4 text-gray-400" />
+  //             <li>
+  //               <Link
+  //                 href={`/brands/${brandSlug}/${equipmentTypeSlug}`}
+  //                 className="text-gray-500 hover:text-gray-700"
+  //               >
+  //                 {equipmentType.name}
+  //               </Link>
+  //             </li>
+  //             <ChevronRight className="h-4 w-4 text-gray-400" />
+  //             <li>
+  //               <Link
+  //                 href={`/brands/${brandSlug}/${equipmentTypeSlug}/${subcategorySlug}`}
+  //                 className="text-gray-500 hover:text-gray-700"
+  //               >
+  //                 {subcategory.name}
+  //               </Link>
+  //             </li>
+  //             <ChevronRight className="h-4 w-4 text-gray-400" />
+  //             <li className="text-[#02445b]  font-medium" aria-current="page">
+  //               {series.name}
+  //             </li>
+  //           </ol>
+  //         </div>
+  //       </nav>
 
-            {localizedSeriesProducts.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">{t('ui.noProductsInSeries', 'No products available in this series yet.')}</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {localizedSeriesProducts.map((product: any) => (
-                  <article
-                    key={product.id}
-                    className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden"
-                  >
-                    <Link
-                      href={`/products/${product.slug}`} // Canonical
-                      className="block"
-                    >
-                      <div className="aspect-w-16 aspect-h-9 bg-gray-200">
-                        <img
-                          src={product.heroImageUrl}
-                          alt={product.heroImageAlt || product.name}
-                          className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <div className="p-6">
-                        <div className="flex items-center justify-between mb-2">
-                          {product.gamme && (
-                            <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
-                              {getGammeLabel(product.gamme)}
-                            </span>
-                          )}
-                          {product.specialty && (
-                            <span className="text-xs text-gray-500">
-                              {getSpecialtyLabel(product.specialty)}
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
-                          {product.name}
-                        </h3>
-                        {product.shortDescription && (
-                          <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                            {product.shortDescription}
-                          </p>
-                        )}
-                        <div className="flex items-center text-[#02445b] font-medium group-hover:underline">
-                          {t('ui.viewDetails', 'View Details')}
-                          <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </Link>
-                  </article>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      </div>
-    );
-  }
+  //       {/* Products Grid */}
+  //       <section className="py-16">
+  //         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  //           <h2 className="text-3xl font-bold text-[#02445b]  mb-8">
+  //             {t('ui.productsIn', 'Products in')} {series.name}
+  //           </h2>
+
+  //           {localizedSeriesProducts.length === 0 ? (
+  //             <div className="text-center py-12 bg-gray-50 rounded-lg">
+  //               <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+  //               <p className="text-gray-500">{t('ui.noProductsInSeries', 'No products available in this series yet.')}</p>
+  //             </div>
+  //           ) : (
+  //             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  //               {localizedSeriesProducts.map((product: any) => (
+  //                 <article
+  //                   key={product.id}
+  //                   className="group relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all overflow-hidden"
+  //                 >
+  //                   <Link
+  //                     href={`/products/${product.slug}`} // Canonical
+  //                     className="block"
+  //                   >
+  //                     <div className="aspect-w-16 aspect-h-9 bg-gray-200">
+  //                       <img
+  //                         src={product.heroImageUrl}
+  //                         alt={product.heroImageAlt || product.name}
+  //                         className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+  //                       />
+  //                     </div>
+  //                     <div className="p-6">
+  //                       <div className="flex items-center justify-between mb-2">
+  //                         {product.gamme && (
+  //                           <span className="inline-block px-3 py-1 text-xs font-semibold text-[#02445b] bg-blue-100 rounded-full">
+  //                             {getGammeLabel(product.gamme)}
+  //                           </span>
+  //                         )}
+  //                         {product.specialty && (
+  //                           <span className="text-xs text-gray-500">
+  //                             {getSpecialtyLabel(product.specialty)}
+  //                           </span>
+  //                         )}
+  //                       </div>
+  //                       <h3 className="text-xl font-semibold text-[#02445b]  mb-2 group-hover:text-[#02445b] transition-colors">
+  //                         {product.name}
+  //                       </h3>
+  //                       {product.shortDescription && (
+  //                         <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+  //                           {product.shortDescription}
+  //                         </p>
+  //                       )}
+  //                       <div className="flex items-center text-[#02445b] font-medium group-hover:underline">
+  //                         {t('ui.viewDetails', 'View Details')}
+  //                         <ChevronRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+  //                       </div>
+  //                     </div>
+  //                   </Link>
+  //                 </article>
+  //               ))}
+  //             </div>
+  //           )}
+  //         </div>
+  //       </section>
+  //     </div>
+  //   );
+  // }
 
   // Try to find as product using service
   const product = await getLocalizedProduct(slug, locale);
-
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3000';
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  const currentUrl = `${baseUrl}/products/${slug}`;
   if (!product) {
     notFound();
   }
@@ -308,94 +316,12 @@ export default async function DynamicSlugPage({ params }: DynamicSlugPageProps) 
       </nav>
 
       {/* Product Hero */}
-      <section className="py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-12 items-start">
-            {/* Image Gallery */}
-            <div>
-              <div className="aspect-w-4 aspect-h-3 bg-gray-200 rounded-lg overflow-hidden mb-4">
-                <img
-                  src={product.heroImageUrl}
-                  alt={product.heroImageAlt || product.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {product.gallery && product.gallery.length > 0 && (
-                <div className="grid grid-cols-4 gap-4">
-                  {product.gallery.map((image) => (
-                    <button
-                      key={image.id}
-                      className="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden hover:opacity-75 transition-opacity"
-                    >
-                      <img
-                        src={image.url}
-                        alt={image.alt}
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Product Info */}
-            <div>
-              {product.gamme && (
-                <span className="inline-block px-3 py-1 text-sm font-semibold mr-2 text-[#02445b] bg-blue-100 rounded-full mb-4">
-                  {getGammeLabel(product.gamme)}
-                </span>
-              )}
-              {product.specialty && (
-                <span className="inline-block px-3 py-1 text-sm font-semibold text-[#02445b] bg-[#bddbd1]/80 rounded-full mb-4">
-                  {getSpecialtyLabel(product.specialty)}
-                </span>
-              )}
-              <h1 className="text-4xl font-bold text-[#02445b]  mb-4">
-                {product.name}
-              </h1>
-              {product.brand && (
-                <p className="text-lg text-gray-600 mb-6">
-                 {t('ui.by', 'by')}{' '}
-                  <Link
-                    href={`/brands/${brandSlug}`}
-                    className="text-[#02445b] hover:underline"
-                  >
-                    {product.brand.name}
-                  </Link>
-                </p>
-              )}
-              {product.shortDescription && (
-                <p className="text-lg text-gray-700 mb-8">
-                  {product.shortDescription}
-                </p>
-              )}
-              {/* Full Description */}
-              {product.fullDescription && (
-                 <div className="prose prose-lg text-gray-700 mb-8">
-                   <p>{product.fullDescription}</p>
-                 </div>
-              )}
-
-              <div className="flex flex-wrap gap-4 mb-8">
-                <a
-                  href="#contact"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-[#02445b] hover:bg-[#02445b]/95 transition-colors"
-                >
-                  {t('ui.requestQuote', 'Request Quote')}
-                </a>
-                {product.specifications && product.specifications.length > 0 && (
-                  <a
-                    href="#specifications"
-                    className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                  >
-                    {t('ui.learnMore', 'View Specifications')}
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+     <ProductHeroSection
+        product={product}
+        uiTranslations={uiTranslations}
+        specialtyTranslations={specialtyTranslations}
+        currentUrl={currentUrl}
+      />
 
       {/* Product Sections */}
       {product.sections && product.sections.length > 0 && (

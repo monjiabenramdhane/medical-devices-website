@@ -109,14 +109,14 @@ export function AdminNavigation({ userEmail }: AdminNavigationProps) {
                 <Layers className="h-5 w-5 mr-3" />
                 Subcategories
               </Link>
-              <Link
+              {/* <Link
                 href="/admin/series"
                 className="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"
                 onClick={() => setIsOpen(false)}
               >
                 <FolderTree className="h-5 w-5 mr-3" />
                 Series
-              </Link>
+              </Link> */}
               <Link
                 href="/admin/products"
                 className="flex items-center px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors"

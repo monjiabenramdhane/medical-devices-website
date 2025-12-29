@@ -202,11 +202,11 @@ export default async function EquipmentTypePage({ params }: EquipmentTypePagePro
                             {subcategory.productCount} {t('ui.products', 'products')}
                           </span>
                         )}
-                        {subcategory.seriesCount !== undefined && subcategory.seriesCount > 0 && (
+                        {/* {subcategory.seriesCount !== undefined && subcategory.seriesCount > 0 && (
                           <span>
                             {subcategory.seriesCount} {t('ui.series', 'series')}
                           </span>
-                        )}
+                        )} */}
                       </div>
                       <ChevronRight className="h-5 w-5 text-[#02445b] group-hover:translate-x-1 transition-transform" />
                     </div>
